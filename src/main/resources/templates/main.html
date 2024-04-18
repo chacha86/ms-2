@@ -10,18 +10,16 @@
 <div class="bg-yellow-400">
     <div class="bg-blue-300">logo</div>
     <div class="bg-red-600 flex">
-        <div class="bg-red-300 w-[20%] h-[800px] text-center ">
-            <ul class="h-[100%]">
+        <div class="bg-red-300 w-[20%] h-[800px] text-center">
+            <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
                     <a th:href="@{|/detail/${note.id}|}" th:text="${note.title}"></a>
                 </li>
             </ul>
-
             <form action="/write" method="post">
                 <input type="submit" value="추가">
             </form>
         </div>
-
         <div class="bg-green-300 w-[80%]">
             <form action="/update" method="post">
                 <div>
@@ -44,4 +42,26 @@
     </div>
 </div>
 </body>
+<script>
+    function update() {
+        const form = document.getElementById("updateForm");
+
+        const result = confirm("수정하시겠습니까?");
+
+        if (result) {
+            form.submit(); // 해당 form 을 submit 수행
+        }
+    }
+
+    function deleteForm() {
+
+        const form = document.getElementById("deleteForm");
+
+        const result = confirm("삭제하시겠습니까?");
+
+        if (result) {
+            form.submit(); // 해당 form 을 submit 수행
+        }
+    }
+</script>
 </html>
