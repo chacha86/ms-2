@@ -1,5 +1,7 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.note.notebook.Notebook;
+import com.example.ms1.note.notebook.NotebookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,51 +12,38 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/books/{notebookId}/notes")
 public class NoteController {
 
     private final NoteRepository noteRepository;
+    private final NotebookRepository notebookRepository;
+    private final NoteService noteService;
 
-    @RequestMapping("/test")
-    @ResponseBody
-    public String test() {
-        return "test";
-    }
 
-    @RequestMapping("/")
-    public String main(Model model) {
-        //1. DB에서 데이터 꺼내오기
-        List<Note> noteList = noteRepository.findAll();
-
-        if(noteList.isEmpty()) {
-            saveDefault();
-            return "redirect:/";
-        }
-
-        //2. 꺼내온 데이터를 템플릿으로 보내기
-        model.addAttribute("noteList", noteList);
-        model.addAttribute("targetNote", noteList.get(0));
-
-        return "main";
-    }
 
     @PostMapping("/write")
-    public String write() {
-
-        saveDefault();
-
+    public String write(@PathVariable("notebookId") Long notebookId) {
+        Notebook notebook = notebookRepository.findById(notebookId).orElseThrow();
+        noteService.saveDefault(notebook);
         return "redirect:/";
     }
 
-    @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable Long id) {
+    @GetMapping("/{id}")
+    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
         Note note = noteRepository.findById(id).get();
+
+        List<Notebook> notebookList = notebookRepository.findAll();
+        Notebook targetNotebook = notebookRepository.findById(notebookId).get();
+
+        model.addAttribute("notebookList", notebookList);
+        model.addAttribute("targetNotebook", targetNotebook);
         model.addAttribute("targetNote", note);
         model.addAttribute("noteList", noteRepository.findAll());
 
         return "main";
     }
-    @PostMapping("/update")
-    public String update(Long id, String title, String content) {
+    @PostMapping("/{id}/update")
+    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content) {
         Note note = noteRepository.findById(id).get();
 
         if(title.trim().length() == 0) {
@@ -65,22 +54,15 @@ public class NoteController {
         note.setContent(content);
 
         noteRepository.save(note);
-        return "redirect:/detail/" + id;
+        return "redirect:/books/%d/notes/%d".formatted(notebookId, id);
     }
 
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
 
         noteRepository.deleteById(id);
         return "redirect:/";
     }
 
-    private Note saveDefault() {
-        Note note = new Note();
-        note.setTitle("new title..");
-        note.setContent("");
-        note.setCreateDate(LocalDateTime.now());
 
-        return noteRepository.save(note);
-    }
 }
