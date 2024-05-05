@@ -11,29 +11,7 @@ th:with="notebookList=${mainDataDto.notebookList},
     <div class="bg-red-600 flex">
         <div class="bg-indigo-300 w-[20%]">
             <ul class="menu h-[100%] overflow-scroll">
-                <li th:each="notebook : ${notebookList}"
-                    th:with="basic='w-[90%] p-[10px]'">
-                    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-                        <details open>
-                            <summary class="flex p-0"><a th:class="${basic}"
-                                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                                         th:href="@{|/books/${notebook.id}|}"
-                                                         th:text="${notebook.name}"></a></summary>
-                            <ul>
-                                <li th:each="child : ${notebook.children}">
-                                    <a th:class="${basic}"
-                                       th:classappend="${child.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-                                       th:href="@{|/books/${child.id}|}" th:text="${child.name}"></a>
-                                </li>
-                            </ul>
-                        </details>
-                    </th:block>
-                    <th:block th:if="${#lists.isEmpty(notebook.children) and notebook.parent == null}">
-                        <a th:class="${basic}"
-                           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-                           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
-                    </th:block>
-                </li>
+                <li th:replace="note_fragment/basic_note::note(${notebookList}, ${targetNotebook})"></li>
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
@@ -49,21 +27,12 @@ th:with="notebookList=${mainDataDto.notebookList},
             <label for="my_modal_6" class="btn">노트 이름 변경</label>
             <a href="/signup" class="btn">회원 가입</a>
             <a href="/logout" class="btn">로그아웃</a>
+            <label for="move_modal" class="btn">노트 이동</label>
 
             <!-- Put this part before </body> tag -->
-            <input type="checkbox" id="my_modal_6" class="modal-toggle" />
-            <div class="modal" role="dialog">
-                <div class="modal-box flex flex-col items-center">
-                    <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
-                        <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                        <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
-                        <input type="submit" class="btn">
-                    </form>
-                    <div class="modal-action flex justify-center">
-                        <label for="my_modal_6" class="btn">Close!</label>
-                    </div>
-                </div>
-            </div>
+            <div th:replace="note_fragment/basic_note::renameModal(${targetNotebook}, ${targetNote})"></div>
+            <div th:replace="note_fragment/basic_note::moveModal(${notebookList}, ${targetNotebook}, ${targetNote})"> </div>
+
         </div>
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">

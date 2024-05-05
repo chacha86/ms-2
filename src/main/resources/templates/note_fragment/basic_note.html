@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kk</title>
+</head>
+<body>
+
+<li th:fragment="note(noteList, targetNotebook)" th:each="notebook : ${noteList}"
+    th:with="basic='w-[90%] p-[10px]'">
+    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
+        <details open>
+            <summary class="flex p-0"><a th:class="${basic}"
+                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
+                                         th:href="@{|/books/${notebook.id}|}"
+                                         th:text="${notebook.name}"></a></summary>
+            <ul>
+                <li th:replace="note_fragment/basic_note::note(${notebook.children}, ${targetNotebook})"></li>
+            </ul>
+        </details>
+    </th:block>
+    <th:block th:if="${#lists.isEmpty(notebook.children)}">
+        <a th:class="${basic}"
+           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
+           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+    </th:block>
+</li>
+
+<div th:fragment="basic(notebook, targetNotebook, basicClass)">
+    <a th:class="${basicClass}"
+       th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
+       th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+</div>
+
+
+<div th:fragment="renameModal(targetNotebook, targetNote)">
+    <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
+    <div class="modal" role="dialog">
+        <div class="modal-box flex flex-col items-center">
+            <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
+                <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
+                <input type="submit" class="btn">
+            </form>
+            <div class="modal-action flex justify-center">
+                <label for="my_modal_6" class="btn">Close!</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="moveModal(notebookList, targetNotebook, targetNote)">
+    <input type="checkbox" id="move_modal" class="modal-toggle"/>
+    <div class="modal" role="dialog">
+        <div class="modal-box">
+            <h1>이동할 노트북을 선택하세요</h1>
+            <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
+                <ul class="menu h-[100%] overflow-scroll">
+                    <li th:if="${targetNotebook.parent != null}">
+                        <div class="flex p-0">
+                            <input type="radio" name="moveTarget" value="-1">
+                            <a class="w-[90%] p-[10px]" href="javascript:void(0)">최상단</a>
+                        </div>
+                    </li>
+                    <li th:replace="note_fragment/basic_note::movenote(${notebookList}, ${targetNotebook})"></li>
+                </ul>
+                <div class="flex justify-center">
+                    <input type="submit" class="btn" value="이동">
+                </div>
+            </form>
+            <div class="modal-action flex justify-center">
+                <label for="move_modal" class="btn">Close!</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<li th:fragment="movenote(noteList, targetNotebook)" th:each="notebook : ${noteList}"
+    th:with="basic='w-[90%] p-[10px]'">
+    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
+        <details th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}"
+                 open class="w-[100%]">
+            <summary class="flex p-0">
+                <input type="radio" name="moveTarget" th:value="${notebook.id}">
+                <a th:class="${basic}"
+                   th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
+                   href="javascript:void(0)"
+                   th:text="${notebook.name}"></a>
+            </summary>
+            <ul>
+                <li th:replace="note_fragment/basic_note::movenote(${notebook.children}, ${targetNotebook})"></li>
+            </ul>
+        </details>
+    </th:block>
+    <th:block th:if="${#lists.isEmpty(notebook.children)}">
+        <div th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}"
+             class="flex p-0">
+            <input type="radio" name="moveTarget" th:value="${notebook.id}">
+            <a th:class="${basic}"
+               th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
+               href="javascript:void(0)" th:text="${notebook.name}"></a>
+        </div>
+    </th:block>
+</li>
+</body>
+</html>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -51,4 +52,9 @@ public class NotebookController {
         return "redirect:/books/%d/notes/%d".formatted(id, targetNoteId);
     }
 
+    @PostMapping("/books/{id}/move")
+    public String move(@PathVariable("id") Long id, Long targetNoteId, @RequestParam("moveTarget") Long moveTargetId) {
+        notebookService.move(id, moveTargetId);
+        return "redirect:/books/%d".formatted(id);
+    }
 }

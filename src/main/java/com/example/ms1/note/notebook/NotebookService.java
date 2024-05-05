@@ -33,4 +33,22 @@ public class NotebookService {
         notebook.setName(name);
         return notebookRepository.save(notebook);
     }
+
+    public List<Notebook> getTopDepthList() {
+        return notebookRepository.findByParentIsNull();
+    }
+
+    public void move(Long id, Long moveTargetId) {
+
+        Notebook notebook = getNotebook(id);
+
+        if (moveTargetId == -1) {
+            notebook.setParent(null);
+        } else {
+            Notebook moveTarget = getNotebook(moveTargetId);
+            notebook.setParent(moveTarget);
+        }
+
+        notebookRepository.save(notebook);
+    }
 }
