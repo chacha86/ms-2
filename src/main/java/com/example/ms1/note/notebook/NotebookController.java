@@ -51,4 +51,10 @@ public class NotebookController {
         return "redirect:/books/%d/notes/%d".formatted(id, targetNoteId);
     }
 
+    @PostMapping("/books/{id}/move")
+    public String move(@PathVariable("id") Long id, Long destinationId, Long targetNoteId) {
+        notebookService.move(id, destinationId);
+
+        return "redirect:/books/%d/notes/%d".formatted(destinationId, targetNoteId);
+    }
 }
