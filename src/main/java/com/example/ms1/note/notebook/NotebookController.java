@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Controller
 @RequiredArgsConstructor
 public class NotebookController {
@@ -34,11 +37,12 @@ public class NotebookController {
     @GetMapping("/books/{id}")
     public String detail(@PathVariable("id") Long id,
                          @RequestParam(value = "keyword", defaultValue = "") String keyword,
-                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch) {
+                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
+                         @RequestParam(value = "sort", defaultValue = "title") String sort) {
         Notebook notebook = notebookService.getNotebook(id);
         Note note = notebook.getNoteList().get(0);
 
-        return "redirect:/books/%d/notes/%d?%s&%s".formatted(id, note.getId(), keyword,isSearch);
+        return "redirect:/books/%d/notes/%d?keyword=%s&isSearch=%s&sort=%d".formatted(id, note.getId(), URLEncoder.encode(keyword, StandardCharsets.UTF_8),isSearch, sort);
     }
 
     @PostMapping("/books/{id}/delete")

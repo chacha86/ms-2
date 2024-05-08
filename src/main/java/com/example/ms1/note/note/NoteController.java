@@ -8,10 +8,7 @@ import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,10 +28,22 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
+    public String detail(Model model, @PathVariable("notebookId") Long notebookId,
+                         @PathVariable("id") Long id,
+                         @RequestParam(value = "keyword", defaultValue = "") String keyword,
+                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
+                         @RequestParam(value = "sort", defaultValue = "title") String sort) {
 
         MainDataDto mainDataDto = mainService.getMainData(notebookId, id);
+        List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
+        List<Note> noteList = mainService.getSearchedNoteList(keyword);
+
         model.addAttribute("mainDataDto", mainDataDto);
+        model.addAttribute("searchedNotebookList", notebookList);
+        model.addAttribute("searchedNoteList", noteList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("isSearch", isSearch);
+        model.addAttribute("sort", sort);
 
         return "main";
     }
