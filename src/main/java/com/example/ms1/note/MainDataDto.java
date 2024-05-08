@@ -1,6 +1,8 @@
 package com.example.ms1.note;
 
 import com.example.ms1.note.note.Note;
+import com.example.ms1.note.note.tag.NoteTag;
+import com.example.ms1.note.note.tag.tag.Tag;
 import com.example.ms1.note.notebook.Notebook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,4 +20,5 @@ public class MainDataDto {
     Notebook targetNotebook;
     List<Note> noteList = new ArrayList<>();
     Note targetNote;
+    List<Tag> tagList = new ArrayList<>();
 }

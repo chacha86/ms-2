@@ -1,5 +1,6 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.note.note.tag.tag.Tag;
 import com.example.ms1.note.notebook.Notebook;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,7 +17,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     // 제목으로 정렬된 노트 리스트
     List<Note> findByNotebookOrderByTitleAsc(Notebook notebook);
     List<Note> findByNotebookOrderByTitleDesc(Notebook notebook);
-
     // 제목으로 정렬된 특정 노트북의 노트 리스트
 
 }

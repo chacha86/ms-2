@@ -54,7 +54,8 @@
      th:with="notebookList=${mainDataDto.notebookList},
         noteList=${mainDataDto.noteList},
         targetNotebook=${mainDataDto.targetNotebook},
-        targetNote=${mainDataDto.targetNote}">
+        targetNote=${mainDataDto.targetNote},
+        tagList=${mainDataDto.tagList}">
     <div class="bg-blue-300">
         <a href="/">logo</a>
     </div>
@@ -131,7 +132,55 @@
                     </div>
                 </div>
             </dialog>
-            <!-- Put this part before </body> tag -->
+
+            <button class="btn" onclick="my_modal_3.showModal()">태그 목록</button>
+            <dialog id="my_modal_3" class="modal">
+                <div class="modal-box">
+                    <!--                    <form action="/search" class="flex justify-center gap-5 mb-[10px]">-->
+                    <!--                        <input type="hidden" name="isSearch" th:value="true">-->
+                    <!--                        <input type="text" name="keyword" class="input" th:value="${keyword}">-->
+                    <!--                        <input type="submit" class="btn" value="검색">-->
+                    <!--                    </form>-->
+                    <div class="flex flex-col h-[400px]">
+                        <ul class="bg-red-300 h-[30%] overflow-auto flex gap-2 flex-wrap">
+                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[5px] h-[30%]">
+                                <i class="fa-solid fa-note-sticky"></i>
+                                <a th:href="@{|/tags/${tag.id}/notes?isTagModal=true|}"
+                                   th:text="${tag.name}" class="hover:bg-blue-600"></a>
+                            </li>
+                        </ul>
+                        <div class="bg-blue-300 h-[70%]">
+                            <ul>
+                                <li th:each="note : ${noteListByTag}">
+
+                                    <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
+                                       th:text="${note.title}"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <form th:action="@{|/search?keyword=${keyword}|}">
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+                            <input type="hidden" name="isTagModal" value="false">
+                            <input type="submit" class="btn" value="Close">
+                        </form>
+                    </div>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <!-- if there is a button in form, it will close the modal -->
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+                    <!--                    <div class="modal-action">-->
+                    <!--                        <form th:action="@{|/search?keyword=${keyword}|}">-->
+                    <!--                            <input type="hidden" name="keyword" th:value="${keyword}">-->
+                    <!--                            <input type="hidden" name="isSearch" value="false">-->
+                    <!--                            <input type="submit" class="btn" value="Close">-->
+                    <!--                        </form>-->
+                    <!--                    </div>-->
+                </div>
+            </dialog>
             <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
             <div class="modal" role="dialog">
                 <div class="modal-box flex flex-col items-center">
@@ -184,6 +233,19 @@
                   id="deleteForm">
                 <input type="button" value="삭제" onclick="deleteForm();">
             </form>
+            <div>
+                <ul class="flex gap-2">
+                    <li th:each="noteTag : ${targetNote.noteTagList}">
+                        <form th:action="@{|/notes/${targetNote.id}/tags/${noteTag.tag.id}/delete|}" method="post">
+                            <input type="submit" th:value="${noteTag.tag.name}">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <form th:action="@{|/notes/${targetNote.id}/tags/create|}" method="post">
+                <input type="text" name="name" class="input input-bordered" placeholder="태그 추가">
+                <input type="submit" class="btn" value="추가">
+            </form>
         </div>
     </div>
     <script th:inline="javascript">
@@ -200,13 +262,17 @@
     </script>
     <script th:inline="javascript">
 
-        console.log("=============");
         const isSearch = /*[[${isSearch}]]*/ null;
-        console.log(isSearch);
+        const isTagModal = /*[[${isTagModal}]]*/ null;
 
         if (isSearch) {
             const searchModal = document.getElementById("my_modal_2");
             searchModal.showModal();
+        }
+
+        if (isTagModal) {
+            const tagModal = document.getElementById("my_modal_3");
+            tagModal.showModal();
         }
 
         function updateForm() {

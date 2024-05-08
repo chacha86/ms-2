@@ -2,6 +2,10 @@ package com.example.ms1.note;
 
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteService;
+import com.example.ms1.note.note.tag.NoteTag;
+import com.example.ms1.note.note.tag.NoteTagService;
+import com.example.ms1.note.note.tag.tag.Tag;
+import com.example.ms1.note.note.tag.tag.TagService;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
@@ -18,6 +22,7 @@ public class MainService {
 
     private final NotebookService notebookService;
     private final NoteService noteService;
+    private final TagService tagService;
 
     public List<Notebook> getSearchedNotebookList(String keyword) {
         return notebookService.getSearchedNotebookList(keyword);
@@ -27,7 +32,6 @@ public class MainService {
         return noteService.getSearchedNoteList(keyword);
     }
     public MainDataDto getDefaultMainData(String sort) {
-//        List<Notebook> notebookList = notebookService.getNotebookList(); // 전체 노트북 리스트
         List<Notebook> notebookList = notebookService.getTopNotebookList();
 
         if (notebookList.isEmpty()) {
@@ -36,7 +40,6 @@ public class MainService {
         }
 
         Notebook targetNotebook = notebookList.get(0);
-//        List<Note> noteList = targetNotebook.getNoteList();
         List<Note> noteList = new ArrayList<>();
         if (sort.equals("title")) {
             noteList = noteService.getSortedListByTitle(targetNotebook);
@@ -45,7 +48,9 @@ public class MainService {
             noteList = noteService.getSortedListByCreateDate(targetNotebook);
         }
         Note targetNote = noteList.get(0);
-        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote);
+        List<Tag> tagList = tagService.getTagList();
+
+        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, tagList);
         return mainDataDto;
     }
 
@@ -65,6 +70,7 @@ public class MainService {
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
         mainDataDto.setNoteList(noteList);
+        mainDataDto.setTagList(tagService.getTagList());
 
         return mainDataDto;
     }

@@ -1,5 +1,6 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.note.note.tag.tag.Tag;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
@@ -49,4 +50,5 @@ public class NoteService {
     public List<Note> getSortedListByTitle(Notebook notebook) {
         return noteRepository.findByNotebookOrderByTitleAsc(notebook);
     }
+
 }

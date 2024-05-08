@@ -32,6 +32,7 @@ public class NoteController {
                          @PathVariable("id") Long id,
                          @RequestParam(value = "keyword", defaultValue = "") String keyword,
                          @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
+                         @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
                          @RequestParam(value = "sort", defaultValue = "title") String sort) {
 
         MainDataDto mainDataDto = mainService.getMainData(notebookId, id, sort);
@@ -43,15 +44,18 @@ public class NoteController {
         model.addAttribute("searchedNoteList", noteList);
         model.addAttribute("keyword", keyword);
         model.addAttribute("isSearch", isSearch);
+        model.addAttribute("isTagModal", isTagModal);
         model.addAttribute("sort", sort);
 
         return "main";
     }
+
     @PostMapping("/{id}/update")
-    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content) {
+    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String
+            title, String content) {
         Note note = noteService.getNote(id);
 
-        if(title.trim().length() == 0) {
+        if (title.trim().length() == 0) {
             title = "제목 없음";
         }
 
