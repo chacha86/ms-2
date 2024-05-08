@@ -1,4 +1,4 @@
-package com.example.ms1.security;
+package com.example.ms1.auth;
 
 import com.example.ms1.note.member.Member;
 import com.example.ms1.note.member.MemberRepository;

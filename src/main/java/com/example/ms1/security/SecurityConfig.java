@@ -1,5 +1,8 @@
 package com.example.ms1.security;
 
+import com.example.ms1.auth.MyUserDetailService;
+import com.example.ms1.auth.oauth2.MyOauth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,7 +15,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final MyOauth2UserService myOauth2UserService;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -25,7 +32,11 @@ public class SecurityConfig {
                                 .defaultSuccessUrl("/")
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login"))
+                        .loginPage("/login")
+//                        .userInfoEndpoint(userInfo -> userInfo
+//                                .userService(myOauth2UserService)
+//                        )
+                )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .invalidateHttpSession(true)

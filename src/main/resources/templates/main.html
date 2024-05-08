@@ -105,25 +105,29 @@
 
             <button class="btn" onclick="my_modal_2.showModal()">검색</button>
             <dialog id="my_modal_2" class="modal">
-                <div class="modal-box">
-                    <form action="/search" class="flex justify-center gap-5 mb-[10px]">
+                <div class="modal-box h-[550px] overflow-hidden">
+                    <form action="/search" class="flex justify-center gap-5 mb-[10px] h-[15%]">
                         <input type="hidden" name="isSearch" th:value="true">
                         <input type="text" name="keyword" class="input" th:value="${keyword}">
                         <input type="submit" class="btn" value="검색">
                     </form>
-                    <ul>
+                    <ul class="h-[70%] overflow-auto border-2">
                         <li th:each="notebook : ${searchedNotebookList}" class="flex gap-3">
-                            <i class="fa-solid fa-book"></i>
-                            <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}"
-                               class="block hover:bg-blue-600" th:classappend></a>
+                            <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
+                                <i class="fa-solid fa-book p-[10px]"></i>
+                                <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}"
+                                   th:classappend class="w-[100%]"></a>
+                            </div>
                         </li>
                         <li th:each="note : ${searchedNoteList}" class="flex gap-3">
-                            <i class="fa-solid fa-note-sticky"></i>
-                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
-                               th:text="${note.title}" class="block hover:bg-blue-600"></a>
+                            <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
+                                <i class="fa-solid fa-note-sticky p-[10px]"></i>
+                                <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
+                                   th:text="${note.title}" class="w-[100%]"></a>
+                            </div>
                         </li>
                     </ul>
-                    <div class="modal-action">
+                    <div class="modal-action h-[10%]">
                         <form th:action="@{|/search?keyword=${keyword}|}">
                             <input type="hidden" name="keyword" th:value="${keyword}">
                             <input type="hidden" name="isSearch" value="false">
@@ -142,19 +146,23 @@
                     <!--                        <input type="submit" class="btn" value="검색">-->
                     <!--                    </form>-->
                     <div class="flex flex-col h-[400px]">
-                        <ul class="bg-red-300 h-[30%] overflow-auto flex gap-2 flex-wrap">
-                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[5px] h-[30%]">
-                                <i class="fa-solid fa-note-sticky"></i>
+                        <h1 class="font-bold mb-[10px]">태그 목록</h1>
+                        <hr>
+                        <ul class="h-[30%] m-[10px] overflow-auto flex gap-2 flex-wrap">
+                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] h-[30%] w-[15%]">
+                                <i class="fa-solid fa-note-sticky mt-[5px]"></i>
                                 <a th:href="@{|/tags/${tag.id}/notes?isTagModal=true|}"
-                                   th:text="${tag.name}" class="hover:bg-blue-600"></a>
+                                   th:text="${tag.name}" class="w-[100%] hover:bg-blue-600 hover:text-white text-center"
+                                   th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"></a>
                             </li>
                         </ul>
-                        <div class="bg-blue-300 h-[70%]">
-                            <ul>
-                                <li th:each="note : ${noteListByTag}">
+                        <hr>
+                        <div class="h-[70%] overflow-auto">
+                            <ul class="m-[10px]">
+                                <li th:each="note : ${noteListByTag}" class="w-[100%] hover:bg-blue-600 hover:text-white">
 
                                     <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
-                                       th:text="${note.title}"></a>
+                                       th:text="${note.title}" class="block w-[100%] p-[10px]"></a>
                                 </li>
                             </ul>
                         </div>
@@ -164,12 +172,6 @@
                             <input type="hidden" name="keyword" th:value="${keyword}">
                             <input type="hidden" name="isTagModal" value="false">
                             <input type="submit" class="btn" value="Close">
-                        </form>
-                    </div>
-                    <div class="modal-action">
-                        <form method="dialog">
-                            <!-- if there is a button in form, it will close the modal -->
-                            <button class="btn">Close</button>
                         </form>
                     </div>
                     <!--                    <div class="modal-action">-->
@@ -236,8 +238,8 @@
             <div>
                 <ul class="flex gap-2">
                     <li th:each="noteTag : ${targetNote.noteTagList}">
-                        <form th:action="@{|/notes/${targetNote.id}/tags/${noteTag.tag.id}/delete|}" method="post">
-                            <input type="submit" th:value="${noteTag.tag.name}">
+                        <form th:action="@{|/notes/${targetNote.id}/tags/${noteTag.id}/delete|}" method="post">
+                            <input type="submit" th:value="${noteTag.tag.name}" class="btn">
                         </form>
                     </li>
                 </ul>

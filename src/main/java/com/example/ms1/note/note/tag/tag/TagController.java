@@ -50,6 +50,7 @@ public class TagController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("isSearch", isSearch);
         model.addAttribute("isTagModal", isTagModal);
+        model.addAttribute("targetTag", tag);
         model.addAttribute("sort", sort);
 
         return "main";
