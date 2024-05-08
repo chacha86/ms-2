@@ -149,10 +149,9 @@
                         <h1 class="font-bold mb-[10px]">태그 목록</h1>
                         <hr>
                         <ul class="h-[30%] m-[10px] overflow-auto flex gap-2 flex-wrap">
-                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] h-[30%] w-[15%]">
-                                <i class="fa-solid fa-note-sticky mt-[5px]"></i>
+                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] w-[20%]">
                                 <a th:href="@{|/tags/${tag.id}/notes?isTagModal=true|}"
-                                   th:text="${tag.name}" class="w-[100%] hover:bg-blue-600 hover:text-white text-center"
+                                   th:text="${tag.name}" class="w-[100%] p-[10px] hover:bg-blue-600 hover:text-white text-center"
                                    th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"></a>
                             </li>
                         </ul>
