@@ -30,7 +30,9 @@ public class MainController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam("keyword") String keyword, Model model) {
+    public String search(@RequestParam("keyword") String keyword,
+                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
+                         Model model) {
         List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
         List<Note> noteList = mainService.getSearchedNoteList(keyword);
 
@@ -40,6 +42,7 @@ public class MainController {
         model.addAttribute("searchedNotebookList", notebookList);
         model.addAttribute("searchedNoteList", noteList);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("isSearch", isSearch);
         return "main";
     }
 

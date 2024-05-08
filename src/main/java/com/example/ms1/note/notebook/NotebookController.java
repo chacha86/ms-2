@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,11 +32,13 @@ public class NotebookController {
     }
 
     @GetMapping("/books/{id}")
-    public String detail(@PathVariable("id") Long id) {
+    public String detail(@PathVariable("id") Long id,
+                         @RequestParam(value = "keyword", defaultValue = "") String keyword,
+                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch) {
         Notebook notebook = notebookService.getNotebook(id);
         Note note = notebook.getNoteList().get(0);
 
-        return "redirect:/books/%d/notes/%d".formatted(id, note.getId());
+        return "redirect:/books/%d/notes/%d?%s&%s".formatted(id, note.getId(), keyword,isSearch);
     }
 
     @PostMapping("/books/{id}/delete")
