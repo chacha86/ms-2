@@ -9,6 +9,7 @@ import com.sun.tools.javac.Main;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,7 +26,7 @@ public class MainService {
     public List<Note> getSearchedNoteList(String keyword) {
         return noteService.getSearchedNoteList(keyword);
     }
-    public MainDataDto getDefaultMainData() {
+    public MainDataDto getDefaultMainData(String sort) {
 //        List<Notebook> notebookList = notebookService.getNotebookList(); // 전체 노트북 리스트
         List<Notebook> notebookList = notebookService.getTopNotebookList();
 
@@ -35,22 +36,35 @@ public class MainService {
         }
 
         Notebook targetNotebook = notebookList.get(0);
-        List<Note> noteList = targetNotebook.getNoteList();
+//        List<Note> noteList = targetNotebook.getNoteList();
+        List<Note> noteList = new ArrayList<>();
+        if (sort.equals("title")) {
+            noteList = noteService.getSortedListByTitle(targetNotebook);
+        }
+        else {
+            noteList = noteService.getSortedListByCreateDate(targetNotebook);
+        }
         Note targetNote = noteList.get(0);
-
         MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote);
         return mainDataDto;
     }
 
-    public MainDataDto getMainData(Long notebookId, Long noteId) {
+    public MainDataDto getMainData(Long notebookId, Long noteId, String sort) {
 
-        MainDataDto mainDataDto = this.getDefaultMainData();
         Notebook targetNotebook = this.getNotebook(notebookId);
+        MainDataDto mainDataDto = this.getDefaultMainData(sort);
         Note targetNote = noteService.getNote(noteId);
+        List<Note> noteList = new ArrayList<>();
+        if(sort.equals("title")) {
+            noteList = noteService.getSortedListByTitle(targetNotebook);
+        }
+        else {
+            noteList = noteService.getSortedListByCreateDate(targetNotebook);
+        }
 
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
-        mainDataDto.setNoteList(targetNotebook.getNoteList());
+        mainDataDto.setNoteList(noteList);
 
         return mainDataDto;
     }

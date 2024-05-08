@@ -42,7 +42,7 @@ public class NotebookController {
         Notebook notebook = notebookService.getNotebook(id);
         Note note = notebook.getNoteList().get(0);
 
-        return "redirect:/books/%d/notes/%d?keyword=%s&isSearch=%s&sort=%d".formatted(id, note.getId(), URLEncoder.encode(keyword, StandardCharsets.UTF_8),isSearch, sort);
+        return "redirect:/books/%d/notes/%d?keyword=%s&isSearch=%s&sort=%s".formatted(id, note.getId(), URLEncoder.encode(keyword, StandardCharsets.UTF_8),isSearch, sort);
     }
 
     @PostMapping("/books/{id}/delete")

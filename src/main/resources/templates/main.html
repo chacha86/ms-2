@@ -113,11 +113,13 @@
                     <ul>
                         <li th:each="notebook : ${searchedNotebookList}" class="flex gap-3">
                             <i class="fa-solid fa-book"></i>
-                            <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}" class="block hover:bg-blue-600" th:classappend></a>
+                            <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}"
+                               class="block hover:bg-blue-600" th:classappend></a>
                         </li>
                         <li th:each="note : ${searchedNoteList}" class="flex gap-3">
                             <i class="fa-solid fa-note-sticky"></i>
-                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}" th:text="${note.title}" class="block hover:bg-blue-600"></a>
+                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
+                               th:text="${note.title}" class="block hover:bg-blue-600"></a>
                         </li>
                     </ul>
                     <div class="modal-action">
@@ -153,12 +155,14 @@
             <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
                 <input type="submit" value="추가">
             </form>
-            <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote}?keyword=${keyword}&isSearch=${isSearch}&sort=${sort}|}">
-                <input type="submit" value="날짜순">
-            </form>
-            <form action="">
-                <input type="submit" value="이름순">
-            </form>
+            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${keyword}&isSearch=${isSearch}&sort=createDate|}"
+               class="btn">
+                날짜순
+            </a>
+            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${keyword}&isSearch=${isSearch}&sort=title|}"
+               class="btn">
+                제목순
+            </a>
         </div>
 
         <div class="w-[60%]">
@@ -200,7 +204,7 @@
         const isSearch = /*[[${isSearch}]]*/ null;
         console.log(isSearch);
 
-        if(isSearch) {
+        if (isSearch) {
             const searchModal = document.getElementById("my_modal_2");
             searchModal.showModal();
         }

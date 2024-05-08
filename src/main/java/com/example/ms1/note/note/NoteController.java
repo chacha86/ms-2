@@ -34,7 +34,7 @@ public class NoteController {
                          @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
                          @RequestParam(value = "sort", defaultValue = "title") String sort) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id);
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, sort);
         List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
         List<Note> noteList = mainService.getSearchedNoteList(keyword);
 

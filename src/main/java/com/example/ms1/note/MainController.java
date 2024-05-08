@@ -24,7 +24,7 @@ public class MainController {
     @RequestMapping("/")
     public String main(Model model) {
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData();
+        MainDataDto mainDataDto = mainService.getDefaultMainData("title");
         model.addAttribute("mainDataDto", mainDataDto);
         return "main";
     }
@@ -38,7 +38,7 @@ public class MainController {
         List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
         List<Note> noteList = mainService.getSearchedNoteList(keyword);
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData();
+        MainDataDto mainDataDto = mainService.getDefaultMainData(sort);
 
         model.addAttribute("mainDataDto", mainDataDto);
         model.addAttribute("searchedNotebookList", notebookList);
