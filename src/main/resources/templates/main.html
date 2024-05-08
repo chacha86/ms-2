@@ -1,39 +1,67 @@
 <html lang="ko" layout:decorate="~{layout}">
 <body>
-<div layout:fragment="content" class="bg-yellow-400"
-th:with="notebookList=${mainDataDto.notebookList},
+<li th:fragment="noteTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
+    th:with="basic='w-[90%] p-[10px]'">
+    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
+        <details open>
+            <summary class="flex p-0"><a th:class="${basic}"
+                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
+                                         th:href="@{|/books/${notebook.id}|}"
+                                         th:text="${notebook.name}"></a></summary>
+            <ul>
+                <li th:replace="main::noteTree(${notebook.children}, ${targetNotebook})"></li>
+            </ul>
+        </details>
+    </th:block>
+    <th:block th:if="${#lists.isEmpty(notebook.children)}">
+        <a th:class="${basic}"
+           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
+           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+    </th:block>
+</li>
+
+
+<li th:fragment="moveTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
+    th:with="basic='w-[90%] p-[10px]'">
+    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
+        <details open
+                 th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}">
+            <summary class="flex p-0">
+                <input type="radio" name="destinationId" th:value="${notebook.id}">
+                <a th:class="${basic}"
+                   th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
+                   href="javascript:void(0)"
+                   th:text="${notebook.name}"></a>
+            </summary>
+            <ul>
+                <li th:replace="main::moveTree(${notebook.children}, ${targetNotebook})"></li>
+            </ul>
+        </details>
+    </th:block>
+    <th:block th:if="${#lists.isEmpty(notebook.children)}">
+        <div th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}"
+             class="flex">
+            <input type="radio" name="destinationId" th:value="${notebook.id}">
+            <a th:class="${basic}"
+               th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
+               href="javascript:void(0)"
+               th:text="${notebook.name}"></a>
+        </div>
+    </th:block>
+</li>
+
+<div layout:fragment="content"
+     th:with="notebookList=${mainDataDto.notebookList},
         noteList=${mainDataDto.noteList},
         targetNotebook=${mainDataDto.targetNotebook},
         targetNote=${mainDataDto.targetNote}">
     <div class="bg-blue-300">
         <a href="/">logo</a>
     </div>
-    <div class="bg-red-600 flex">
+    <div class="flex">
         <div class="bg-indigo-300 w-[20%]">
             <ul class="menu h-[100%] overflow-scroll">
-                <li th:each="notebook : ${notebookList}"
-                    th:with="basic='w-[90%] p-[10px]'">
-                    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-                        <details open>
-                            <summary class="flex p-0"><a th:class="${basic}"
-                                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                                         th:href="@{|/books/${notebook.id}|}"
-                                                         th:text="${notebook.name}"></a></summary>
-                            <ul>
-                                <li th:each="child : ${notebook.children}">
-                                    <a th:class="${basic}"
-                                       th:classappend="${child.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-                                       th:href="@{|/books/${child.id}|}" th:text="${child.name}"></a>
-                                </li>
-                            </ul>
-                        </details>
-                    </th:block>
-                    <th:block th:if="${#lists.isEmpty(notebook.children) and notebook.parent == null}">
-                        <a th:class="${basic}"
-                           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-                           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
-                    </th:block>
-                </li>
+                <li th:replace="main::noteTree(${notebookList}, ${targetNotebook})">
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
@@ -50,8 +78,32 @@ th:with="notebookList=${mainDataDto.notebookList},
             <a href="/signup" class="btn">회원 가입</a>
             <a href="/logout" class="btn">로그아웃</a>
 
+            <!-- Open the modal using ID.showModal() method -->
+            <button class="btn" onclick="my_modal_1.showModal()">노트 이동</button>
+            <dialog id="my_modal_1" class="modal">
+                <div class="modal-box">
+                    <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
+                        <div>
+                            <ul class="menu h-[100%] overflow-scroll">
+                                <li th:replace="main::moveTree(${notebookList}, ${targetNotebook})">
+                            </ul>
+                        </div>
+                        <div class="flex justify-end">
+                            <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                            <input type="submit" value="이동" class="btn">
+                        </div>
+                    </form>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <!-- if there is a button in form, it will close the modal -->
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+
             <!-- Put this part before </body> tag -->
-            <input type="checkbox" id="my_modal_6" class="modal-toggle" />
+            <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
             <div class="modal" role="dialog">
                 <div class="modal-box flex flex-col items-center">
                     <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
@@ -76,7 +128,7 @@ th:with="notebookList=${mainDataDto.notebookList},
             </form>
         </div>
 
-        <div class="bg-green-300 w-[60%]">
+        <div class="w-[60%]">
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/update|}" method="post"
                   id="updateForm">
                 <div>
@@ -85,9 +137,8 @@ th:with="notebookList=${mainDataDto.notebookList},
                 <div>
                     <input type="text" name="title" th:value="${targetNote.title}">
                 </div>
-                <div>
-                    <textarea name="content" cols="30" rows="10" th:text="${targetNote.content}"></textarea>
-                </div>
+                <input type="hidden" name="content" id="editor-body">
+                <div id="editor"></div>
                 <div>
                     <input type="button" value="수정" onclick="updateForm()">
                 </div>
@@ -98,10 +149,25 @@ th:with="notebookList=${mainDataDto.notebookList},
             </form>
         </div>
     </div>
+    <script th:inline="javascript">
+        const Editor = toastui.Editor;
+        const editor = new Editor({
+            el: document.querySelector('#editor'),
+            height: '700px',
+            initialEditType: 'markdown',
+            previewStyle: 'vertical',
+            initialValue: [[${targetNote.content}]]
+        });
+
+        editor.getMarkdown();
+    </script>
     <script>
         function updateForm() {
             const form = document.getElementById("updateForm");
+            const editorBody = document.getElementById("editor-body");
             if (confirm("수정하시겠습니까?")) {
+                const text = editor.getMarkdown();
+                editorBody.value = text;
                 form.submit();
             }
         }
