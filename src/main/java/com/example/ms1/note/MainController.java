@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -25,6 +26,20 @@ public class MainController {
 
         MainDataDto mainDataDto = mainService.getDefaultMainData();
         model.addAttribute("mainDataDto", mainDataDto);
+        return "main";
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam("keyword") String keyword, Model model) {
+        List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
+        List<Note> noteList = mainService.getSearchedNoteList(keyword);
+
+        MainDataDto mainDataDto = mainService.getDefaultMainData();
+
+        model.addAttribute("mainDataDto", mainDataDto);
+        model.addAttribute("searchedNotebookList", notebookList);
+        model.addAttribute("searchedNoteList", noteList);
+        model.addAttribute("keyword", keyword);
         return "main";
     }
 

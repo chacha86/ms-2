@@ -102,6 +102,29 @@
                 </div>
             </dialog>
 
+            <button class="btn" onclick="my_modal_2.showModal()">검색</button>
+            <dialog id="my_modal_2" class="modal">
+                <div class="modal-box">
+                    <form action="/search" class="flex justify-center gap-5 mb-[10px]">
+                        <input type="text" name="keyword" class="input" th:value="${keyword}">
+                        <input type="submit" class="btn" value="검색">
+                    </form>
+                    <ul>
+                        <li th:each="notebook : ${searchedNotebookList}">
+                            <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}" class="block hover:bg-blue-600"></a>
+                        </li>
+                        <li th:each="note : ${searchedNoteList}">
+                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}" th:text="${note.title}" class="block hover:bg-blue-600"></a>
+                        </li>
+                    </ul>
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <!-- if there is a button in form, it will close the modal -->
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
             <!-- Put this part before </body> tag -->
             <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
             <div class="modal" role="dialog">
@@ -162,6 +185,9 @@
         editor.getMarkdown();
     </script>
     <script>
+        const searchModal = document.getElementById("my_modal_2");
+        searchModal.showModal();
+
         function updateForm() {
             const form = document.getElementById("updateForm");
             const editorBody = document.getElementById("editor-body");

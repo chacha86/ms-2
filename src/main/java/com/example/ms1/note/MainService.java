@@ -18,6 +18,13 @@ public class MainService {
     private final NotebookService notebookService;
     private final NoteService noteService;
 
+    public List<Notebook> getSearchedNotebookList(String keyword) {
+        return notebookService.getSearchedNotebookList(keyword);
+    }
+
+    public List<Note> getSearchedNoteList(String keyword) {
+        return noteService.getSearchedNoteList(keyword);
+    }
     public MainDataDto getDefaultMainData() {
 //        List<Notebook> notebookList = notebookService.getNotebookList(); // 전체 노트북 리스트
         List<Notebook> notebookList = notebookService.getTopNotebookList();
