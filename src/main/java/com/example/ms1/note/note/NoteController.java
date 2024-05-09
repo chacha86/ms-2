@@ -35,7 +35,7 @@ public class NoteController {
                          @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
                          @RequestParam(value = "sort", defaultValue = "title") String sort) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, sort);
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, keyword, sort);
         List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
         List<Note> noteList = mainService.getSearchedNoteList(keyword);
 

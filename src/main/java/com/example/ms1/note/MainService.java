@@ -31,7 +31,8 @@ public class MainService {
     public List<Note> getSearchedNoteList(String keyword) {
         return noteService.getSearchedNoteList(keyword);
     }
-    public MainDataDto getDefaultMainData(String sort) {
+
+    public MainDataDto getDefaultMainData(String keyword, String sort) {
         List<Notebook> notebookList = notebookService.getTopNotebookList();
 
         if (notebookList.isEmpty()) {
@@ -43,34 +44,41 @@ public class MainService {
         List<Note> noteList = new ArrayList<>();
         if (sort.equals("title")) {
             noteList = noteService.getSortedListByTitle(targetNotebook);
-        }
-        else {
+        } else {
             noteList = noteService.getSortedListByCreateDate(targetNotebook);
         }
+
+        List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
+        List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
+
         Note targetNote = noteList.get(0);
         List<Tag> tagList = tagService.getTagList();
 
-        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, tagList);
+        SearchedDataDto searchedDataDto = new SearchedDataDto(searchedNotebookList, searchedNoteList, tagList);
+
+        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook,
+                noteList, targetNote, searchedDataDto);
+
         return mainDataDto;
     }
 
-    public MainDataDto getMainData(Long notebookId, Long noteId, String sort) {
+    public MainDataDto getMainData(Long notebookId, Long noteId, String keyword, String sort) {
 
         Notebook targetNotebook = this.getNotebook(notebookId);
-        MainDataDto mainDataDto = this.getDefaultMainData(sort);
+        MainDataDto mainDataDto = this.getDefaultMainData(keyword, sort);
+
         Note targetNote = noteService.getNote(noteId);
         List<Note> noteList = new ArrayList<>();
-        if(sort.equals("title")) {
+        if (sort.equals("title")) {
             noteList = noteService.getSortedListByTitle(targetNotebook);
-        }
-        else {
+        } else {
             noteList = noteService.getSortedListByCreateDate(targetNotebook);
         }
 
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
         mainDataDto.setNoteList(noteList);
-        mainDataDto.setTagList(tagService.getTagList());
+        mainDataDto.getSearchedDataDto().setSearchedNotebookList(this.getSearchedNotebookList(keyword));
 
         return mainDataDto;
     }
@@ -113,10 +121,9 @@ public class MainService {
 
         Notebook notebook = this.getNotebook(id);
 
-        if(notebook.getChildren().isEmpty()) {
+        if (notebook.getChildren().isEmpty()) {
             deleteBasic(notebook);
-        }
-        else {
+        } else {
             deleteGroup(notebook);
         }
     }

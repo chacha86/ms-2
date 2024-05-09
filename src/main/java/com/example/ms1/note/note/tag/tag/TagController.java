@@ -41,11 +41,9 @@ public class TagController {
             noteListByTag.add(noteTag.getNote());
         }
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData(sort);
+        MainDataDto mainDataDto = mainService.getDefaultMainData(keyword, sort);
 
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("searchedNotebookList", notebookList);
-        model.addAttribute("searchedNoteList", noteList);
         model.addAttribute("noteListByTag", noteListByTag);
         model.addAttribute("keyword", keyword);
         model.addAttribute("isSearch", isSearch);

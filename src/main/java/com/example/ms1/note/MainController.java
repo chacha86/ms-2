@@ -24,7 +24,7 @@ public class MainController {
     @RequestMapping("/")
     public String main(Model model) {
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData("title");
+        MainDataDto mainDataDto = mainService.getDefaultMainData("", "title");
         model.addAttribute("mainDataDto", mainDataDto);
         return "main";
     }
@@ -36,14 +36,10 @@ public class MainController {
                          @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
                          Model model) {
 
-        List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
-        List<Note> noteList = mainService.getSearchedNoteList(keyword);
-
-        MainDataDto mainDataDto = mainService.getDefaultMainData(sort);
+        MainDataDto mainDataDto = mainService.getDefaultMainData(keyword, sort);
 
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("searchedNotebookList", notebookList);
-        model.addAttribute("searchedNoteList", noteList);
+
         model.addAttribute("keyword", keyword);
         model.addAttribute("isSearch", isSearch);
         model.addAttribute("isTagModal", isTagModal);
@@ -55,6 +51,6 @@ public class MainController {
     @GetMapping("test")
     @ResponseBody
     public String test(String fruits) {
-        return fruits;
+        return "test";
     }
 }
