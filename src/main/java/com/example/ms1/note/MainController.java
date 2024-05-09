@@ -1,5 +1,6 @@
 package com.example.ms1.note;
 
+import com.example.ms1.global.DefaultParamDto;
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteRepository;
 import com.example.ms1.note.note.NoteService;
@@ -9,10 +10,7 @@ import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,29 +19,11 @@ import java.util.List;
 public class MainController {
     private final MainService mainService;
 
-    @RequestMapping("/")
-    public String main(Model model) {
+    @GetMapping("/")
+    public String main(Model model, @RequestAttribute DefaultParamDto defaultParamDto) {
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData("", "title");
+        MainDataDto mainDataDto = mainService.getDefaultMainData(defaultParamDto.getKeyword(), defaultParamDto.getSort());
         model.addAttribute("mainDataDto", mainDataDto);
-        return "main";
-    }
-
-    @GetMapping("/search")
-    public String search(@RequestParam("keyword") String keyword,
-                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
-                         @RequestParam(value = "sort", defaultValue = "title") String sort,
-                         @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
-                         Model model) {
-
-        MainDataDto mainDataDto = mainService.getDefaultMainData(keyword, sort);
-
-        model.addAttribute("mainDataDto", mainDataDto);
-
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("isSearch", isSearch);
-        model.addAttribute("isTagModal", isTagModal);
-        model.addAttribute("sort", sort);
 
         return "main";
     }

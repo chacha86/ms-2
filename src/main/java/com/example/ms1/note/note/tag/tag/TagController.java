@@ -1,5 +1,7 @@
 package com.example.ms1.note.note.tag.tag;
 
+import com.example.ms1.global.DefaultParamDto;
+import com.example.ms1.global.UrlManager;
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
 import com.example.ms1.note.note.Note;
@@ -8,10 +10,7 @@ import com.example.ms1.note.notebook.Notebook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,36 +21,20 @@ import java.util.List;
 public class TagController {
     private final TagService tagService;
     private final MainService mainService;
+    private final UrlManager urlManager;
 
     @GetMapping("{id}/notes")
     public String tagList(
-            @PathVariable("id") Long tagId,
-            @RequestParam(value = "keyword", defaultValue = "") String keyword,
-            @RequestParam(value = "sort", defaultValue = "title") String sort,
-            @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
-            @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
-            Model model) {
+            @PathVariable("id") Long tagId, Model model, @ModelAttribute("defaultParamDto") DefaultParamDto defaultParamDto) {
 
-        List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
-        List<Note> noteList = mainService.getSearchedNoteList(keyword);
         Tag tag = tagService.getTag(tagId);
-
-        List<Note> noteListByTag = new ArrayList<>();
-        for(NoteTag noteTag : tag.getNoteTagList()) {
-            noteListByTag.add(noteTag.getNote());
-        }
-
-        MainDataDto mainDataDto = mainService.getDefaultMainData(keyword, sort);
+        MainDataDto mainDataDto = mainService.getDefaultMainData(defaultParamDto.getKeyword(), defaultParamDto.getSort());
+        List<NoteTag> list = tag.getNoteTagList();
 
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("noteListByTag", noteListByTag);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("isSearch", isSearch);
-        model.addAttribute("isTagModal", isTagModal);
         model.addAttribute("targetTag", tag);
-        model.addAttribute("sort", sort);
+        model.addAttribute("noteTagList", list);
 
         return "main";
-
     }
 }

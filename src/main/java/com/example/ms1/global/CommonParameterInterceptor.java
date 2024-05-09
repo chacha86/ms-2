@@ -2,28 +2,50 @@ package com.example.ms1.global;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class CommonParameterInterceptor implements HandlerInterceptor {
-    private final String DEFAULT_SORT = "title";
-    private final String DEFAULT_KEYWORD = "";
-    private final boolean DEFAULT_IS_SEARCH = false;
-    private final boolean DEFAULT_IS_TAG_MODAL = false;
+
+    @Autowired
+    private UrlManager urlManager;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String keyword = request.getParameter("keyword") == null ? DEFAULT_KEYWORD : (String)request.getParameter("keyword");
 
-        String isSearch = request.getParameter("isSearch");
-        String isTagModal = request.getParameter("isTagModal");
+        String keyword = request.getParameter("keyword");
+        Boolean isSearch = Boolean.valueOf((String)request.getParameter("isSearch"));
+        Boolean isTagModal = Boolean.valueOf((String)request.getParameter("isTagModal"));
         String sort = request.getParameter("sort");
-        request.setAttribute("test", "123");
+
+        DefaultParamDto defaultParamDto = new DefaultParamDto(keyword, isSearch, isTagModal, sort);
+
+        urlManager.setDefaultParamDto(defaultParamDto);
+        request.setAttribute("defaultParamDto", defaultParamDto);
+
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+
+        if(modelAndView == null) {
+            return;
+        }
+
+        String keyword = request.getParameter("keyword");
+        Boolean isSearch = Boolean.valueOf((String)request.getParameter("isSearch"));
+        Boolean isTagModal = Boolean.valueOf((String)request.getParameter("isTagModal"));
+        String sort = request.getParameter("sort");
+
+        DefaultParamDto defaultParamDto = new DefaultParamDto(keyword, isSearch, isTagModal, sort);
+        urlManager.setDefaultParamDto(defaultParamDto);
+
+        modelAndView.addObject("defaultParamDto", defaultParamDto);
+
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 

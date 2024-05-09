@@ -1,54 +1,12 @@
 <html lang="ko" layout:decorate="~{layout}">
 <body>
-<li th:fragment="noteTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
-    th:with="basic='w-[90%] p-[10px]'">
-    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-        <details open>
-            <summary class="flex p-0"><a th:class="${basic}"
-                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                         th:href="@{|/books/${notebook.id}|}"
-                                         th:text="${notebook.name}"></a></summary>
-            <ul>
-                <li th:replace="main::noteTree(${notebook.children}, ${targetNotebook})"></li>
-            </ul>
-        </details>
-    </th:block>
-    <th:block th:if="${#lists.isEmpty(notebook.children)}">
-        <a th:class="${basic}"
-           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
-    </th:block>
-</li>
 
-
-<li th:fragment="moveTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
-    th:with="basic='w-[90%] p-[10px]'">
-    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-        <details open
-                 th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}">
-            <summary class="flex p-0">
-                <input type="radio" name="destinationId" th:value="${notebook.id}">
-                <a th:class="${basic}"
-                   th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                   href="javascript:void(0)"
-                   th:text="${notebook.name}"></a>
-            </summary>
-            <ul>
-                <li th:replace="main::moveTree(${notebook.children}, ${targetNotebook})"></li>
-            </ul>
-        </details>
-    </th:block>
-    <th:block th:if="${#lists.isEmpty(notebook.children)}">
-        <div th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}"
-             class="flex">
-            <input type="radio" name="destinationId" th:value="${notebook.id}">
-            <a th:class="${basic}"
-               th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-               href="javascript:void(0)"
-               th:text="${notebook.name}"></a>
-        </div>
-    </th:block>
-</li>
+<div th:fragment="paramInput">
+    <input type="hidden" name="keyword" th:value="${keyword}">
+    <input type="hidden" name="isSearch" th:value="${isSearch}">
+    <input type="hidden" name="isTagModal" th:value="${isTagModal}">
+    <input type="hidden" name="sort" th:value="${sort}">
+</div>
 
 <div layout:fragment="content"
      th:with="notebookList=${mainDataDto.notebookList},
@@ -57,7 +15,12 @@
         targetNote=${mainDataDto.targetNote},
         searchedNotebookList=${mainDataDto.searchedDataDto.searchedNotebookList},
         searchedNoteList=${mainDataDto.searchedDataDto.searchedNoteList},
-        tagList=${mainDataDto.searchedDataDto.tagList}">
+        tagList=${mainDataDto.searchedDataDto.tagList},
+        keyword=${defaultParamDto.keyword},
+        isSearch=${defaultParamDto.isSearch},
+        isTagModal=${defaultParamDto.isTagModal},
+        sort=${defaultParamDto.sort}
+">
 
     <div class="bg-blue-300">
         <a href="/">logo</a>
@@ -65,17 +28,20 @@
     <div class="flex">
         <div class="bg-indigo-300 w-[20%]">
             <ul class="menu h-[100%] overflow-scroll">
-                <li th:replace="main::noteTree(${notebookList}, ${targetNotebook})">
+                <li th:replace="~{fragment/note::noteTree(${notebookList}, ${targetNotebook})}">
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" value="추가">
             </form>
 
             <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" value="하위 노트북 추가">
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" value="삭제">
             </form>
             <label for="my_modal_6" class="btn">노트 이름 변경</label>
@@ -89,11 +55,12 @@
                     <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
                         <div>
                             <ul class="menu h-[100%] overflow-scroll">
-                                <li th:replace="main::moveTree(${notebookList}, ${targetNotebook})">
+                                <li th:replace="~{fragment/note::moveTree(${notebookList}, ${targetNotebook})}">
                             </ul>
                         </div>
                         <div class="flex justify-end">
                             <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                            <div th:replace="~{main::paramInput}"></div>
                             <input type="submit" value="이동" class="btn">
                         </div>
                     </form>
@@ -109,8 +76,10 @@
             <button class="btn" onclick="my_modal_2.showModal()">검색</button>
             <dialog id="my_modal_2" class="modal">
                 <div class="modal-box h-[550px] overflow-hidden">
-                    <form action="/search" class="flex justify-center gap-5 mb-[10px] h-[15%]">
+                    <form action="/" class="flex justify-center gap-5 mb-[10px] h-[15%]">
                         <input type="hidden" name="isSearch" th:value="true">
+                        <input type="hidden" name="isTagModal" th:value="${isTagModal}">
+                        <input type="hidden" name="sort" th:value="${sort}">
                         <input type="text" name="keyword" class="input" th:value="${keyword}">
                         <input type="submit" class="btn" value="검색">
                     </form>
@@ -118,22 +87,25 @@
                         <li th:each="notebook : ${searchedNotebookList}" class="flex gap-3">
                             <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
                                 <i class="fa-solid fa-book p-[10px]"></i>
-                                <a th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}"
+                                <a th:href="${@urlManager.bookParamUrl(notebook.id, keyword, 'false', isTagModal, sort)}"
+                                   th:text="${notebook.name}"
                                    th:classappend class="w-[100%]"></a>
                             </div>
                         </li>
                         <li th:each="note : ${searchedNoteList}" class="flex gap-3">
                             <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
                                 <i class="fa-solid fa-note-sticky p-[10px]"></i>
-                                <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
+                                <a th:href="${@urlManager.noteParamUrl(note.notebook.id, note.id, keyword, 'false', isTagModal, sort)}"
                                    th:text="${note.title}" class="w-[100%]"></a>
                             </div>
                         </li>
                     </ul>
                     <div class="modal-action h-[10%]">
-                        <form th:action="@{|/search?keyword=${keyword}|}">
+                        <form action="/">
                             <input type="hidden" name="keyword" th:value="${keyword}">
                             <input type="hidden" name="isSearch" value="false">
+                            <input type="hidden" name="isTagModal" th:value="${isTagModal}">
+                            <input type="hidden" name="sort" th:value="${sort}">
                             <input type="submit" class="btn" value="Close">
                         </form>
                     </div>
@@ -153,25 +125,29 @@
                         <hr>
                         <ul class="h-[30%] m-[10px] overflow-auto flex gap-2 flex-wrap">
                             <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] w-[20%]">
-                                <a th:href="@{|/tags/${tag.id}/notes?isTagModal=true|}"
-                                   th:text="${tag.name}" class="w-[100%] p-[10px] hover:bg-blue-600 hover:text-white text-center"
+                                <a th:href="${@urlManager.tagParamUrl(tag.id, keyword, isSearch, 'true', sort)}"
+                                   th:text="${tag.name}"
+                                   class="w-[100%] p-[10px] hover:bg-blue-600 hover:text-white text-center"
                                    th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"></a>
                             </li>
                         </ul>
                         <hr>
                         <div class="h-[70%] overflow-auto">
                             <ul class="m-[10px]">
-                                <li th:each="note : ${noteListByTag}" class="w-[100%] hover:bg-blue-600 hover:text-white">
+                                <li th:each="noteTag : ${noteTagList}"
+                                    class="w-[100%] hover:bg-blue-600 hover:text-white">
 
-                                    <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}?keyword=${keyword}|}"
-                                       th:text="${note.title}" class="block w-[100%] p-[10px]"></a>
+                                    <a th:href="${@urlManager.noteParamUrl(noteTag.note.notebook.id, noteTag.note.id, keyword, isSearch, 'false', sort)}"
+                                       th:text="${noteTag.note.title}" class="block w-[100%] p-[10px]"></a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="modal-action">
-                        <form th:action="@{|/search?keyword=${keyword}|}">
+                        <form action="/">
+                            <input type="hidden" name="sort" th:value="${sort}">
                             <input type="hidden" name="keyword" th:value="${keyword}">
+                            <input type="hidden" name="isSearch" th:value="${isSearch}">
                             <input type="hidden" name="isTagModal" value="false">
                             <input type="submit" class="btn" value="Close">
                         </form>
@@ -190,6 +166,7 @@
                 <div class="modal-box flex flex-col items-center">
                     <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
                         <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                        <div th:replace="~{main::paramInput}"></div>
                         <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
                         <input type="submit" class="btn">
                     </form>
@@ -202,10 +179,11 @@
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:href="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}"></a>
+                    <a th:href="${@urlManager.noteParamUrl(targetNotebook.id, note.id)}" th:text="${note.title}"></a>
                 </li>
             </ul>
             <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" value="추가">
             </form>
             <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${keyword}&isSearch=${isSearch}&sort=createDate|}"
@@ -221,6 +199,7 @@
         <div class="w-[60%]">
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/update|}" method="post"
                   id="updateForm">
+                <div th:replace="~{main::paramInput}"></div>
                 <div>
                     <input type="hidden" name="id" th:value="${targetNote.id}">
                 </div>
@@ -235,6 +214,7 @@
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/delete|}" method="post"
                   id="deleteForm">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="button" value="삭제" onclick="deleteForm();">
             </form>
             <div>
@@ -248,6 +228,7 @@
             </div>
             <form th:action="@{|/notes/${targetNote.id}/tags/create|}" method="post">
                 <input type="text" name="name" class="input input-bordered" placeholder="태그 추가">
+                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" class="btn" value="추가">
             </form>
         </div>
