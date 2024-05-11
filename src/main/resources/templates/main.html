@@ -1,13 +1,6 @@
 <html lang="ko" layout:decorate="~{layout}">
 <body>
 
-<div th:fragment="paramInput">
-    <input type="hidden" name="keyword" th:value="${keyword}">
-    <input type="hidden" name="isSearch" th:value="${isSearch}">
-    <input type="hidden" name="isTagModal" th:value="${isTagModal}">
-    <input type="hidden" name="sort" th:value="${sort}">
-</div>
-
 <div layout:fragment="content"
      th:with="notebookList=${mainDataDto.notebookList},
         noteList=${mainDataDto.noteList},
@@ -16,11 +9,19 @@
         searchedNotebookList=${mainDataDto.searchedDataDto.searchedNotebookList},
         searchedNoteList=${mainDataDto.searchedDataDto.searchedNoteList},
         tagList=${mainDataDto.searchedDataDto.tagList},
-        keyword=${defaultParamDto.keyword},
-        isSearch=${defaultParamDto.isSearch},
-        isTagModal=${defaultParamDto.isTagModal},
-        sort=${defaultParamDto.sort}
 ">
+
+    <div id="params" th:object="${paramModel}">
+        <input type="hidden" name="keyword" th:field="*{keyword}">
+        <input type="hidden" name="isSearch" th:field="*{isSearch}">
+        <input type="hidden" name="isTagModal" th:field="*{isTagModal}">
+        <input type="hidden" name="sort" th:field="*{sort}">
+    </div>
+
+    <dialog th:replace="~{fragment/modal::move}"/>
+    <dialog th:replace="~{fragment/modal::search}"/>
+    <dialog th:replace="~{fragment/modal::tag}"/>
+    <dialog th:replace="~{fragment/modal::rename}"/>
 
     <div class="bg-blue-300">
         <a href="/">logo</a>
@@ -31,175 +32,51 @@
                 <li th:replace="~{fragment/note::noteTree(${notebookList}, ${targetNotebook})}">
             </ul>
 
-            <form th:action="@{|/books/write|}" method="post">
-                <div th:replace="~{main::paramInput}"></div>
-                <input type="submit" value="추가">
+            <form th:action="${@notebookUrlHandler.getWriteUrl()}" method="post">
+                <input type="submit" value="추가" class="postActionBtn">
             </form>
 
-            <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
-                <div th:replace="~{main::paramInput}"></div>
-                <input type="submit" value="하위 노트북 추가">
+            <form th:action="${@notebookUrlHandler.getSubWriteUrl(targetNotebook.id)}" method="post">
+                <input type="submit" value="하위 노트북 추가" class="postActionBtn">
             </form>
-            <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
-                <div th:replace="~{main::paramInput}"></div>
-                <input type="submit" value="삭제">
+            <form th:action="${@notebookUrlHandler.getDeleteUrl(targetNotebook.id)}" method="post">
+                <input type="submit" value="삭제" class="postActionBtn">
             </form>
-            <label for="my_modal_6" class="btn">노트 이름 변경</label>
             <a href="/signup" class="btn">회원 가입</a>
             <a href="/logout" class="btn">로그아웃</a>
 
             <!-- Open the modal using ID.showModal() method -->
+            <button class="btn" onclick="my_modal_4.showModal()">노트 이름 변경</button>
             <button class="btn" onclick="my_modal_1.showModal()">노트 이동</button>
-            <dialog id="my_modal_1" class="modal">
-                <div class="modal-box">
-                    <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
-                        <div>
-                            <ul class="menu h-[100%] overflow-scroll">
-                                <li th:replace="~{fragment/note::moveTree(${notebookList}, ${targetNotebook})}">
-                            </ul>
-                        </div>
-                        <div class="flex justify-end">
-                            <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                            <div th:replace="~{main::paramInput}"></div>
-                            <input type="submit" value="이동" class="btn">
-                        </div>
-                    </form>
-                    <div class="modal-action">
-                        <form method="dialog">
-                            <!-- if there is a button in form, it will close the modal -->
-                            <button class="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
-
             <button class="btn" onclick="my_modal_2.showModal()">검색</button>
-            <dialog id="my_modal_2" class="modal">
-                <div class="modal-box h-[550px] overflow-hidden">
-                    <form action="/" class="flex justify-center gap-5 mb-[10px] h-[15%]">
-                        <input type="hidden" name="isSearch" th:value="true">
-                        <input type="hidden" name="isTagModal" th:value="${isTagModal}">
-                        <input type="hidden" name="sort" th:value="${sort}">
-                        <input type="text" name="keyword" class="input" th:value="${keyword}">
-                        <input type="submit" class="btn" value="검색">
-                    </form>
-                    <ul class="h-[70%] overflow-auto border-2">
-                        <li th:each="notebook : ${searchedNotebookList}" class="flex gap-3">
-                            <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
-                                <i class="fa-solid fa-book p-[10px]"></i>
-                                <a th:href="${@urlManager.bookParamUrl(notebook.id, keyword, 'false', isTagModal, sort)}"
-                                   th:text="${notebook.name}"
-                                   th:classappend class="w-[100%]"></a>
-                            </div>
-                        </li>
-                        <li th:each="note : ${searchedNoteList}" class="flex gap-3">
-                            <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
-                                <i class="fa-solid fa-note-sticky p-[10px]"></i>
-                                <a th:href="${@urlManager.noteParamUrl(note.notebook.id, note.id, keyword, 'false', isTagModal, sort)}"
-                                   th:text="${note.title}" class="w-[100%]"></a>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="modal-action h-[10%]">
-                        <form action="/">
-                            <input type="hidden" name="keyword" th:value="${keyword}">
-                            <input type="hidden" name="isSearch" value="false">
-                            <input type="hidden" name="isTagModal" th:value="${isTagModal}">
-                            <input type="hidden" name="sort" th:value="${sort}">
-                            <input type="submit" class="btn" value="Close">
-                        </form>
-                    </div>
-                </div>
-            </dialog>
-
             <button class="btn" onclick="my_modal_3.showModal()">태그 목록</button>
-            <dialog id="my_modal_3" class="modal">
-                <div class="modal-box">
-                    <!--                    <form action="/search" class="flex justify-center gap-5 mb-[10px]">-->
-                    <!--                        <input type="hidden" name="isSearch" th:value="true">-->
-                    <!--                        <input type="text" name="keyword" class="input" th:value="${keyword}">-->
-                    <!--                        <input type="submit" class="btn" value="검색">-->
-                    <!--                    </form>-->
-                    <div class="flex flex-col h-[400px]">
-                        <h1 class="font-bold mb-[10px]">태그 목록</h1>
-                        <hr>
-                        <ul class="h-[30%] m-[10px] overflow-auto flex gap-2 flex-wrap">
-                            <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] w-[20%]">
-                                <a th:href="${@urlManager.tagParamUrl(tag.id, keyword, isSearch, 'true', sort)}"
-                                   th:text="${tag.name}"
-                                   class="w-[100%] p-[10px] hover:bg-blue-600 hover:text-white text-center"
-                                   th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"></a>
-                            </li>
-                        </ul>
-                        <hr>
-                        <div class="h-[70%] overflow-auto">
-                            <ul class="m-[10px]">
-                                <li th:each="noteTag : ${noteTagList}"
-                                    class="w-[100%] hover:bg-blue-600 hover:text-white">
 
-                                    <a th:href="${@urlManager.noteParamUrl(noteTag.note.notebook.id, noteTag.note.id, keyword, isSearch, 'false', sort)}"
-                                       th:text="${noteTag.note.title}" class="block w-[100%] p-[10px]"></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="modal-action">
-                        <form action="/">
-                            <input type="hidden" name="sort" th:value="${sort}">
-                            <input type="hidden" name="keyword" th:value="${keyword}">
-                            <input type="hidden" name="isSearch" th:value="${isSearch}">
-                            <input type="hidden" name="isTagModal" value="false">
-                            <input type="submit" class="btn" value="Close">
-                        </form>
-                    </div>
-                    <!--                    <div class="modal-action">-->
-                    <!--                        <form th:action="@{|/search?keyword=${keyword}|}">-->
-                    <!--                            <input type="hidden" name="keyword" th:value="${keyword}">-->
-                    <!--                            <input type="hidden" name="isSearch" value="false">-->
-                    <!--                            <input type="submit" class="btn" value="Close">-->
-                    <!--                        </form>-->
-                    <!--                    </div>-->
-                </div>
-            </dialog>
-            <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
-            <div class="modal" role="dialog">
-                <div class="modal-box flex flex-col items-center">
-                    <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
-                        <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                        <div th:replace="~{main::paramInput}"></div>
-                        <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
-                        <input type="submit" class="btn">
-                    </form>
-                    <div class="modal-action flex justify-center">
-                        <label for="my_modal_6" class="btn">Close!</label>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:href="${@urlManager.noteParamUrl(targetNotebook.id, note.id)}" th:text="${note.title}"></a>
+                    <a th:href="${@noteUrlHandler.getDetailUrl(targetNotebook.id, note.id)}"
+                       th:text="${note.title}"></a>
                 </li>
             </ul>
-            <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
-                <div th:replace="~{main::paramInput}"></div>
-                <input type="submit" value="추가">
+            <form th:action="${@noteUrlHandler.getWriteUrl(targetNotebook.id)}" method="post">
+                <input type="submit" value="추가" class="postActionBtn">
             </form>
-            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${keyword}&isSearch=${isSearch}&sort=createDate|}"
+            <a th:data-url="${@noteUrlHandler.getDetailUrl(targetNotebook.id, targetNote.id)}"
+               id="sortDate"
                class="btn">
                 날짜순
             </a>
-            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${keyword}&isSearch=${isSearch}&sort=title|}"
+            <a th:data-url="${@noteUrlHandler.getDetailUrl(targetNotebook.id, targetNote.id)}"
+               id="sortTitle"
                class="btn">
                 제목순
             </a>
         </div>
 
         <div class="w-[60%]">
-            <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/update|}" method="post"
+            <form th:action="${@noteUrlHandler.getUpdateUrl(targetNotebook.id, targetNote.id)}" method="post"
                   id="updateForm">
-                <div th:replace="~{main::paramInput}"></div>
                 <div>
                     <input type="hidden" name="id" th:value="${targetNote.id}">
                 </div>
@@ -209,13 +86,12 @@
                 <input type="hidden" name="content" id="editor-body">
                 <div id="editor"></div>
                 <div>
-                    <input type="button" value="수정" onclick="updateForm()">
+                    <input type="button" value="수정" id="updateBtn">
                 </div>
             </form>
-            <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/delete|}" method="post"
+            <form th:action="${@noteUrlHandler.getDeleteUrl(targetNotebook.id, targetNote.id)}" method="post"
                   id="deleteForm">
-                <div th:replace="~{main::paramInput}"></div>
-                <input type="button" value="삭제" onclick="deleteForm();">
+                <input type="button" value="삭제" id="deleteBtn">
             </form>
             <div>
                 <ul class="flex gap-2">
@@ -228,7 +104,6 @@
             </div>
             <form th:action="@{|/notes/${targetNote.id}/tags/create|}" method="post">
                 <input type="text" name="name" class="input input-bordered" placeholder="태그 추가">
-                <div th:replace="~{main::paramInput}"></div>
                 <input type="submit" class="btn" value="추가">
             </form>
         </div>
@@ -245,37 +120,133 @@
 
         editor.getMarkdown();
     </script>
-    <script th:inline="javascript">
+    <script>
 
-        const isSearch = /*[[${isSearch}]]*/ null;
-        const isTagModal = /*[[${isTagModal}]]*/ null;
+        window.onload = function () {
+            console.log("dfsdfsdf");
+            const params = getDefaultParams();
+            const isSearch = params.isSearch;
+            const isTagModal = params.isTagModal;
+            console.log(params);
+            console.log(isSearch);
+            console.log(isTagModal);
+            if (Boolean(isSearch)) {
+                const searchModal = document.getElementById("my_modal_2");
+                searchModal.showModal();
+            }
 
-        if (isSearch) {
-            const searchModal = document.getElementById("my_modal_2");
-            searchModal.showModal();
+            if (Boolean(isTagModal)) {
+                const tagModal = document.getElementById("my_modal_3");
+                tagModal.showModal();
+            }
+
+            document.getElementById("updateBtn").addEventListener("click", updateForm);
+            document.getElementById("deleteBtn").addEventListener("click", deleteForm);
+
+            document.getElementById("sortDate").addEventListener("click", event => {
+                event.preventDefault();
+
+                getAction(event.target, (params) => {
+                    params.sort = "date";
+                });
+
+            });
+
+            document.getElementById("sortTitle").addEventListener("click", event => {
+                event.preventDefault();
+                getAction(event.target, (params) => {
+                    params.sort = "title";
+                });
+            });
+
         }
 
-        if (isTagModal) {
-            const tagModal = document.getElementById("my_modal_3");
-            tagModal.showModal();
-        }
-
-        function updateForm() {
-            const form = document.getElementById("updateForm");
+        function updateForm(e) {
             const editorBody = document.getElementById("editor-body");
             if (confirm("수정하시겠습니까?")) {
                 const text = editor.getMarkdown();
                 editorBody.value = text;
-                form.submit();
+                defaultPostAction(e.target);
             }
         }
 
-        function deleteForm() {
-            const form = document.getElementById("deleteForm");
+        function deleteForm(e) {
             if (confirm("삭제하시겠습니까?")) {
-                form.submit();
+                defaultPostAction(e.target);
             }
+
+            document.querySelectorAll(".postActionBtn").forEach(btn => {
+                btn.addEventListener("click", event => {
+                    event.preventDefault();
+                    postAction(event.target);
+                });
+            });
+
+            document.querySelectorAll(".getActionBtn").forEach(btn => {
+                btn.addEventListener("click", event => {
+                    event.preventDefault();
+                    getAction(event.target);
+                });
+            });
+        }
+    </script>
+
+    <script th:replace="~{fragment/modal::searchJs}"></script>
+
+    <script>
+        function postAction(button, callback = null) {
+
+            const form = button.form;
+            const params = getDefaultParams();
+
+            if (callback !== null)
+                callback(params);
+
+            let exParams = [];
+
+            form.querySelectorAll("input").forEach(input => {
+                if (input.name !== null && input.type !== "submit")
+                    exParams.push(input.name);
+            });
+            console.log(exParams);
+
+            Object.entries(params).forEach(([key, value]) => {
+                if (exParams.includes(key)) {
+                    return;
+                }
+                const input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", key);
+                input.setAttribute("value", value);
+                form.appendChild(input);
+            });
+
+            form.submit();
+        }
+
+        function getAction(link, callback = null) {
+            const url = link.dataset.url;
+            const params = getDefaultParams();
+
+            if (callback !== null)
+                callback(params);
+
+            const queryString = new URLSearchParams(params).toString();
+            const action = `${url}?${queryString}`;
+
+            location.href = action;
+        }
+
+        function getDefaultParams() {
+            const paramInputs = document.getElementById("params").children;
+            const params = {};
+            Array.from(paramInputs).forEach(input => {
+                params[input.name] = input.value;
+            });
+
+            return params;
         }
     </script>
 </div>
+</body>
 </html>

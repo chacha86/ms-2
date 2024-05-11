@@ -1,65 +1,57 @@
 package com.example.ms1.note.notebook;
 
 import com.example.ms1.global.DefaultParamDto;
-import com.example.ms1.global.UrlManager;
+import com.example.ms1.global.ParamModel;
+import com.example.ms1.global.UrlHandler;
 import com.example.ms1.note.MainService;
 import com.example.ms1.note.note.Note;
-import com.example.ms1.note.note.NoteService;
+import com.example.ms1.note.note.NoteUrlHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Controller
 @RequiredArgsConstructor
 public class NotebookController {
-
     private final NotebookService notebookService;
     private final MainService mainService;
-    private final UrlManager urlManager;
 
-    @PostMapping("/books/write")
-    public String write() {
+    @PostMapping(NotebookUrlHandler.WRITE_URL)
+    public String write(@ModelAttribute ParamModel paramModel) {
         mainService.saveDefaultNotebook();
-        return urlManager.redirectMainParamUrl();
-
+        return "redirect:" + paramModel.getParamUrl(NotebookUrlHandler.MAIN_URL);
     }
 
-    @PostMapping("/groups/{notebookId}/books/write")
-    public String groupWrite(@PathVariable("notebookId") Long notebookId) {
+    @PostMapping(NotebookUrlHandler.SUB_WRITE_URL)
+    public String groupWrite(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId, @ModelAttribute ParamModel paramModel) {
         mainService.saveGroupNotebook(notebookId);
-        return urlManager.redirectMainParamUrl();
+        return "redirect:" + paramModel.getParamUrl(NotebookUrlHandler.MAIN_URL);
     }
 
-    @GetMapping("/books/{id}")
-    public String detail(@PathVariable("id") Long id, @ModelAttribute DefaultParamDto defaultParamDto) {
+    @GetMapping(NotebookUrlHandler.DETAIL_URL)
+    public String detail(@PathVariable(NotebookUrlHandler.BOOK_ID) Long id, @ModelAttribute ParamModel paramModel) {
         Notebook notebook = notebookService.getNotebook(id);
         Note note = notebook.getNoteList().get(0);
 
-        urlManager.setDefaultParamDto(defaultParamDto);
-        return urlManager.redirectNoteParamUrl(notebook.getId(), note.getId());
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.getDetailUrl(notebook.getId(), note.getId()));
     }
 
-    @PostMapping("/books/{id}/delete")
-    public String delete(@PathVariable("id") Long id,@ModelAttribute DefaultParamDto defaultParamDto) {
+    @PostMapping(NotebookUrlHandler.DELETE_URL)
+    public String delete(@PathVariable(NotebookUrlHandler.BOOK_ID) Long id, @ModelAttribute ParamModel paramModel) {
         notebookService.delete(id);
-        return urlManager.redirectMainParamUrl();
+        return "redirect:" + paramModel.getParamUrl(NotebookUrlHandler.MAIN_URL);
     }
 
-    @PostMapping("/books/{id}/update")
-    public String update(@PathVariable("id") Long id, Long targetNoteId, String name, @ModelAttribute DefaultParamDto defaultParamDto) {
+    @PostMapping(NotebookUrlHandler.UPDATE_URL)
+    public String update(@PathVariable(NotebookUrlHandler.BOOK_ID) Long id, Long targetNoteId, String name, @ModelAttribute ParamModel paramModel) {
         notebookService.updateName(id, name);
-        urlManager.setDefaultParamDto(defaultParamDto);
-        return urlManager.redirectNoteParamUrl(id, targetNoteId);
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.getDetailUrl(id, targetNoteId));
     }
 
-    @PostMapping("/books/{id}/move")
-    public String move(@PathVariable("id") Long id, Long destinationId, Long targetNoteId, @ModelAttribute DefaultParamDto defaultParamDto) {
+    @PostMapping(NotebookUrlHandler.MOVE_URL)
+    public String move(@PathVariable(NotebookUrlHandler.BOOK_ID) Long id, Long destinationId, Long targetNoteId, @ModelAttribute ParamModel paramModel) {
         notebookService.move(id, destinationId);
-
-        urlManager.setDefaultParamDto(defaultParamDto);
-        return urlManager.redirectNoteParamUrl(id, targetNoteId);
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.getDetailUrl(id, targetNoteId));
     }
+
 }

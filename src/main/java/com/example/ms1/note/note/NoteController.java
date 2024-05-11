@@ -1,58 +1,53 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.global.DefaultParamDto;
+import com.example.ms1.global.ParamModel;
+import com.example.ms1.global.UrlHandler;
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
+import com.example.ms1.note.notebook.NotebookUrlHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.tags.Param;
 
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/books/{notebookId}/notes")
+@RequestMapping(NoteUrlHandler.BOOK_NOTE_URL)
 public class NoteController {
 
     private final NoteService noteService;
     private final MainService mainService;
 
-    @PostMapping("/write")
-    public String write(@PathVariable("notebookId") Long notebookId) {
+    @PostMapping(NoteUrlHandler.WRITE_URL)
+    public String write(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId, @ModelAttribute ParamModel paramModel) {
 
         mainService.addToNotebook(notebookId);
-        return "redirect:/";
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.MAIN_URL);
     }
 
-    @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable("notebookId") Long notebookId,
-                         @PathVariable("id") Long id,
-                         @RequestParam(value = "keyword", defaultValue = "") String keyword,
-                         @RequestParam(value = "isSearch", defaultValue = "false") boolean isSearch,
-                         @RequestParam(value = "isTagModal", defaultValue = "false") boolean isTagModal,
-                         @RequestParam(value = "sort", defaultValue = "title") String sort) {
+    @GetMapping(NoteUrlHandler.DETAIL_URL)
+    public String detail(Model model, @PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id,
+                         @ModelAttribute ParamModel defaultParamDto) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, keyword, sort);
-        List<Notebook> notebookList = mainService.getSearchedNotebookList(keyword);
-        List<Note> noteList = mainService.getSearchedNoteList(keyword);
-
+        System.out.println(defaultParamDto.getKeyword());
+        System.out.println(defaultParamDto.getSort());
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, defaultParamDto.getKeyword(), defaultParamDto.getSort());
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("searchedNotebookList", notebookList);
-        model.addAttribute("searchedNoteList", noteList);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("isSearch", isSearch);
-        model.addAttribute("isTagModal", isTagModal);
-        model.addAttribute("sort", sort);
-
         return "main";
     }
 
-    @PostMapping("/{id}/update")
-    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String
-            title, String content) {
+    @PostMapping(NoteUrlHandler.UPDATE_URL)
+    public String update(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id, String title, String content,
+                         @ModelAttribute ParamModel paramModel) {
         Note note = noteService.getNote(id);
 
         if (title.trim().length() == 0) {
@@ -63,15 +58,15 @@ public class NoteController {
         note.setContent(content);
 
         noteService.save(note);
-        return "redirect:/books/%d/notes/%d".formatted(notebookId, id);
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.getDetailUrl(notebookId, id));
     }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
+    @PostMapping(NoteUrlHandler.DELETE_URL)
+    public String delete(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id,
+                         @ModelAttribute ParamModel paramModel) {
 
         noteService.delete(id);
-        return "redirect:/";
+        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.MAIN_URL);
     }
-
-
 }

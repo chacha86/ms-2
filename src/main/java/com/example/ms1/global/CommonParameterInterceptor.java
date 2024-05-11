@@ -11,41 +11,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class CommonParameterInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private UrlManager urlManager;
+    private UrlHandler urlHandler;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        String keyword = request.getParameter("keyword");
-        Boolean isSearch = Boolean.valueOf((String)request.getParameter("isSearch"));
-        Boolean isTagModal = Boolean.valueOf((String)request.getParameter("isTagModal"));
-        String sort = request.getParameter("sort");
-
-        DefaultParamDto defaultParamDto = new DefaultParamDto(keyword, isSearch, isTagModal, sort);
-
-        urlManager.setDefaultParamDto(defaultParamDto);
-        request.setAttribute("defaultParamDto", defaultParamDto);
-
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-        if(modelAndView == null) {
-            return;
-        }
-
-        String keyword = request.getParameter("keyword");
-        Boolean isSearch = Boolean.valueOf((String)request.getParameter("isSearch"));
-        Boolean isTagModal = Boolean.valueOf((String)request.getParameter("isTagModal"));
-        String sort = request.getParameter("sort");
-
-        DefaultParamDto defaultParamDto = new DefaultParamDto(keyword, isSearch, isTagModal, sort);
-        urlManager.setDefaultParamDto(defaultParamDto);
-
-        modelAndView.addObject("defaultParamDto", defaultParamDto);
-
         HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
     }
 

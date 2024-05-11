@@ -1,0 +1,117 @@
+<dialog th:fragment="move" id="my_modal_1" class="modal">
+    <div class="modal-box">
+        <form th:action="${@notebookUrlHandler.getMoveUrl(targetNotebook.id)}" method="post">
+            <div>
+                <ul class="menu h-[100%] overflow-scroll">
+                    <li th:replace="~{fragment/note::moveTree(${notebookList}, ${targetNotebook})}">
+                </ul>
+            </div>
+            <div class="flex justify-end">
+                <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                <input type="submit" value="이동" class="btn">
+            </div>
+        </form>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+
+<dialog th:fragment="search" id="my_modal_2" class="modal">
+    <div class="modal-box h-[550px] overflow-hidden">
+        <div class="flex justify-center gap-5 mb-[10px] h-[15%]" th:object="${paramModel}">
+            <input type="text" name="keyword" id="keywordInput" class="input" th:field="*{keyword}">
+            <a th:data-url="${@urlHandler.MAIN_URL}" id="searchBtn" class="btn">검색</a>
+        </div>
+        <ul class="h-[70%] overflow-auto border-2">
+            <li th:each="notebook : ${searchedNotebookList}" class="flex gap-3">
+                <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
+                    <i class="fa-solid fa-book p-[10px]"></i>
+                    <a th:data-url="${@notebookUrlHandler.getDetailUrl(notebook.id)}"
+                       th:text="${notebook.name}"
+                       th:classappend class="getActionBtn w-[100%]"></a>
+                </div>
+            </li>
+            <li th:each="note : ${searchedNoteList}" class="flex gap-3">
+                <div class="flex items-center w-[100%] hover:bg-blue-600 p-[10px]">
+                    <i class="fa-solid fa-note-sticky p-[10px]"></i>
+                    <a th:data-url="${@noteUrlHandler.getDetailUrl(note.notebook.id, note.id)}"
+                       th:text="${note.title}" class="getActionBtn w-[100%]"></a>
+                </div>
+            </li>
+        </ul>
+        <div class="modal-action h-[10%]">
+            <form action="/">
+                <input type="hidden" name="keyword" th:value="${keyword}">
+                <input type="hidden" name="isSearch" value="false">
+                <input type="hidden" name="isTagModal" th:value="${isTagModal}">
+                <input type="hidden" name="sort" th:value="${sort}">
+                <a th:data-url="${@urlHandler.MAIN_URL}" class="getActionBtn btn">Close</a>
+            </form>
+        </div>
+    </div>
+</dialog>
+<script th:fragment="searchJs">
+    document.querySelector('#searchBtn').addEventListener('click', (event) => {
+        event.preventDefault();
+        const keyword = document.querySelector('#keywordInput').value;
+        getAction(event.target, (params) => {
+            params.isSearch = true;
+            params.keyword = keyword;
+        });
+    });
+</script>
+
+<dialog th:fragment="tag" id="my_modal_3" class="modal">
+    <div class="modal-box">
+        <div class="flex flex-col h-[400px]">
+            <h1 class="font-bold mb-[10px]">태그 목록</h1>
+            <hr>
+            <ul class="h-[30%] m-[10px] overflow-auto flex gap-2 flex-wrap">
+                <li th:each="tag : ${tagList}" class="flex gap-2 p-[3px] w-[20%]">
+                    <a href="/"
+                       th:text="${tag.name}"
+                       class="w-[100%] p-[10px] hover:bg-blue-600 hover:text-white text-center"
+                       th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"></a>
+                </li>
+            </ul>
+            <hr>
+            <div class="h-[70%] overflow-auto">
+                <ul class="m-[10px]">
+                    <li th:each="noteTag : ${noteTagList}"
+                        class="w-[100%] hover:bg-blue-600 hover:text-white">
+
+                        <a th:href="${@noteUrlHandler.getDetailUrl(noteTag.note.notebook.id, noteTag.note.id)}"
+                           th:text="${noteTag.note.title}" class="block w-[100%] p-[10px]"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-action">
+            <form action="/">
+                <input type="hidden" name="sort" th:value="${sort}">
+                <input type="hidden" name="keyword" th:value="${keyword}">
+                <input type="hidden" name="isSearch" th:value="${isSearch}">
+                <input type="hidden" name="isTagModal" value="false">
+                <input type="submit" class="btn" value="Close">
+            </form>
+        </div>
+    </div>
+</dialog>
+<dialog th:fragment="rename" id="my_modal_4" class="modal">
+    <div class="modal-box flex flex-col items-center">
+        <form th:action="${@notebookUrlHandler.getUpdateUrl(targetNotebook.id)}" class="flex" method="post">
+            <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+            <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
+            <input type="submit" class="btn">
+        </form>
+        <div class="modal-action">
+            <form method="dialog flex justify-center">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>

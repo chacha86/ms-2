@@ -15,28 +15,26 @@ import java.nio.charset.StandardCharsets;
 @Setter
 public class DefaultParamDto {
 
-    private final String DEFAULT_SORT = "title";
-    private final String DEFAULT_KEYWORD = "";
-    private final boolean DEFAULT_IS_SEARCH = false;
-    private final boolean DEFAULT_IS_TAG_MODAL = false;
+    private static final String DEFAULT_SORT = "title";
+    private static final String DEFAULT_KEYWORD = "";
+    private static final boolean DEFAULT_IS_SEARCH = false;
+    private static final boolean DEFAULT_IS_TAG_MODAL = false;
 
+    private static DefaultParamDto instance;
     private String keyword;
     private Boolean isSearch;
     private Boolean isTagModal;
     private String sort;
 
-    public DefaultParamDto(String keyword, Boolean isSearch, Boolean isTagModal, String sort) {
-        this.keyword = keyword == null ? DEFAULT_KEYWORD : keyword;
-        this.isSearch = isSearch == null ? DEFAULT_IS_SEARCH : isSearch;
-        this.isTagModal = isTagModal == null ? DEFAULT_IS_TAG_MODAL : isTagModal;
-        this.sort = sort == null ? DEFAULT_SORT : sort;
+    private DefaultParamDto() {
     }
 
-    public DefaultParamDto() {
-        this.keyword = DEFAULT_KEYWORD;
-        this.isSearch = DEFAULT_IS_SEARCH;
-        this.isTagModal = DEFAULT_IS_TAG_MODAL;
-        this.sort = DEFAULT_SORT;
+    public static DefaultParamDto getInstance() {
+        if (instance == null) {
+            instance = new DefaultParamDto();
+            instance.setParams(DEFAULT_KEYWORD, DEFAULT_IS_SEARCH, DEFAULT_IS_TAG_MODAL, DEFAULT_SORT);
+        }
+        return instance;
     }
 
     public String getQueryParam() {
@@ -45,5 +43,12 @@ public class DefaultParamDto {
 
     public String getQueryParam(String keyword, Boolean isSearch, Boolean isTagModal, String sort) {
         return String.format("keyword=%s&isSearch=%s&isTagModal=%s&sort=%s", URLEncoder.encode(keyword, StandardCharsets.UTF_8), isSearch, isTagModal, sort);
+    }
+
+    public void setParams(String keyword, Boolean isSearch, Boolean isTagModal, String sort) {
+        this.keyword = keyword == null ? DEFAULT_KEYWORD : keyword;
+        this.isSearch = isSearch == null ? DEFAULT_IS_SEARCH : isSearch;
+        this.isTagModal = isTagModal == null ? DEFAULT_IS_TAG_MODAL : isTagModal;
+        this.sort = sort == null ? DEFAULT_SORT : sort;
     }
 }
