@@ -20,5 +20,6 @@ public class MainDataDto {
     Notebook targetNotebook;
     List<Note> noteList = new ArrayList<>();
     Note targetNote;
+    List<Tag> tagList = new ArrayList<>();
     SearchedDataDto searchedDataDto;
 }

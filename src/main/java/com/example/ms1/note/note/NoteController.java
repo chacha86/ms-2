@@ -1,53 +1,43 @@
 package com.example.ms1.note.note;
 
-import com.example.ms1.global.DefaultParamDto;
-import com.example.ms1.global.ParamModel;
-import com.example.ms1.global.UrlHandler;
+import com.example.ms1.global.ParamHandler;
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
-import com.example.ms1.note.notebook.Notebook;
-import com.example.ms1.note.notebook.NotebookRepository;
-import com.example.ms1.note.notebook.NotebookService;
+import com.example.ms1.note.MainUrlHandler;
 import com.example.ms1.note.notebook.NotebookUrlHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.tags.Param;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping(NoteUrlHandler.BOOK_NOTE_URL)
 public class NoteController {
 
     private final NoteService noteService;
     private final MainService mainService;
 
-    @PostMapping(NoteUrlHandler.WRITE_URL)
-    public String write(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId, @ModelAttribute ParamModel paramModel) {
+    @PostMapping(NoteUrlHandler.WRITE)
+    public String write(@PathVariable(NotebookUrlHandler.ID) Long notebookId, @ModelAttribute ParamHandler paramHandler) {
 
         mainService.addToNotebook(notebookId);
-        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.MAIN_URL);
+        return paramHandler.getRedirectParamUrl(MainUrlHandler.MAIN_URL);
     }
 
-    @GetMapping(NoteUrlHandler.DETAIL_URL)
-    public String detail(Model model, @PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
-                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id,
-                         @ModelAttribute ParamModel defaultParamDto) {
+    @GetMapping(NoteUrlHandler.BOOK_NOTE)
+    public String detail(Model model, @PathVariable(NotebookUrlHandler.ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.ID) Long id,
+                         @ModelAttribute ParamHandler defaultParamDto) {
 
-        System.out.println(defaultParamDto.getKeyword());
-        System.out.println(defaultParamDto.getSort());
         MainDataDto mainDataDto = mainService.getMainData(notebookId, id, defaultParamDto.getKeyword(), defaultParamDto.getSort());
         model.addAttribute("mainDataDto", mainDataDto);
         return "main";
     }
 
-    @PostMapping(NoteUrlHandler.UPDATE_URL)
-    public String update(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
-                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id, String title, String content,
-                         @ModelAttribute ParamModel paramModel) {
+    @PostMapping(NoteUrlHandler.UPDATE)
+    public String update(@PathVariable(NotebookUrlHandler.ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.ID) Long id, String title, String content,
+                         @ModelAttribute ParamHandler paramHandler) {
         Note note = noteService.getNote(id);
 
         if (title.trim().length() == 0) {
@@ -58,15 +48,15 @@ public class NoteController {
         note.setContent(content);
 
         noteService.save(note);
-        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.getDetailUrl(notebookId, id));
+        return paramHandler.getRedirectParamUrl(NoteUrlHandler.detail(notebookId, id));
     }
 
-    @PostMapping(NoteUrlHandler.DELETE_URL)
-    public String delete(@PathVariable(NotebookUrlHandler.BOOK_ID) Long notebookId,
-                         @PathVariable(NoteUrlHandler.NOTE_ID) Long id,
-                         @ModelAttribute ParamModel paramModel) {
+    @PostMapping(NoteUrlHandler.DELETE)
+    public String delete(@PathVariable(NotebookUrlHandler.ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.ID) Long id,
+                         @ModelAttribute ParamHandler paramHandler) {
 
         noteService.delete(id);
-        return "redirect:" + paramModel.getParamUrl(NoteUrlHandler.MAIN_URL);
+        return paramHandler.getRedirectParamUrl(MainUrlHandler.MAIN_URL);
     }
 }

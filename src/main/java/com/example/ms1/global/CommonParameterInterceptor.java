@@ -1,5 +1,6 @@
 package com.example.ms1.global;
 
+import com.example.ms1.note.MainUrlHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class CommonParameterInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private UrlHandler urlHandler;
+    private MainUrlHandler mainUrlHandler;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

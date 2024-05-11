@@ -54,10 +54,10 @@ public class MainService {
         Note targetNote = noteList.get(0);
         List<Tag> tagList = tagService.getTagList();
 
-        SearchedDataDto searchedDataDto = new SearchedDataDto(searchedNotebookList, searchedNoteList, tagList);
+        SearchedDataDto searchedDataDto = new SearchedDataDto(searchedNotebookList, searchedNoteList);
 
         MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook,
-                noteList, targetNote, searchedDataDto);
+                noteList, targetNote, tagList, searchedDataDto);
 
         return mainDataDto;
     }
@@ -78,7 +78,7 @@ public class MainService {
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
         mainDataDto.setNoteList(noteList);
-        mainDataDto.getSearchedDataDto().setSearchedNotebookList(this.getSearchedNotebookList(keyword));
+//        mainDataDto.getSearchedDataDto().setSearchedNotebookList(this.getSearchedNotebookList(keyword));
 
         return mainDataDto;
     }

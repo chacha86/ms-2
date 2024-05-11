@@ -16,5 +16,4 @@ import java.util.List;
 public class SearchedDataDto {
     List<Notebook> searchedNotebookList = new ArrayList<>();
     List<Note> searchedNoteList = new ArrayList<>();
-    List<Tag> tagList = new ArrayList<>();
 }

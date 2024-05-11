@@ -6,7 +6,7 @@
         <details open>
             <summary class="flex p-0"><a th:class="${'getActionBtn ' + basic}"
                                          th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                         th:data-url="${@notebookUrlHandler.getDetailUrl(notebook.id)}"
+                                         th:data-url="${@notebookUrlHandler.detail(notebook.id)}"
                                          th:text="${notebook.name}"></a></summary>
             <ul>
                 <li th:replace="~{fragment/note::noteTree(${notebook.children}, ${targetNotebook})}"></li>
@@ -16,7 +16,7 @@
     <th:block th:if="${#lists.isEmpty(notebook.children)}">
         <a th:class="${'getActionBtn ' + basic}"
            th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-           th:data-url="${@notebookUrlHandler.getDetailUrl(notebook.id)}" th:text="${notebook.name}"></a>
+           th:data-url="${@notebookUrlHandler.detail(notebook.id)}" th:text="${notebook.name}"></a>
     </th:block>
 </li>
 
