@@ -31,9 +31,9 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
+    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String keyword) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id);
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, keyword);
         model.addAttribute("mainDataDto", mainDataDto);
 
         return "main";
