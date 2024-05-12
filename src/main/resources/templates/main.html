@@ -1,55 +1,5 @@
 <html lang="ko" layout:decorate="~{layout}">
 <body>
-<li th:fragment="noteTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
-    th:with="basic='w-[90%] p-[10px]'">
-    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-        <details open>
-            <summary class="flex p-0"><a th:class="${basic}"
-                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                         th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}"
-                                         th:text="${notebook.name}"></a></summary>
-            <ul>
-                <li th:replace="main::noteTree(${notebook.children}, ${targetNotebook})"></li>
-            </ul>
-        </details>
-    </th:block>
-    <th:block th:if="${#lists.isEmpty(notebook.children)}">
-        <a th:class="${basic}"
-           th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-           th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}" th:text="${notebook.name}"></a>
-    </th:block>
-</li>
-
-
-<li th:fragment="moveTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
-    th:with="basic='w-[90%] p-[10px]'">
-    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
-        <details open
-                 th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}">
-            <summary class="flex p-0">
-                <input type="radio" name="destinationId" th:value="${notebook.id}">
-                <a th:class="${basic}"
-                   th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                   href="javascript:void(0)"
-                   th:text="${notebook.name}"></a>
-            </summary>
-            <ul>
-                <li th:replace="main::moveTree(${notebook.children}, ${targetNotebook})"></li>
-            </ul>
-        </details>
-    </th:block>
-    <th:block th:if="${#lists.isEmpty(notebook.children)}">
-        <div th:if="${notebook.id != targetNotebook.id and !#lists.contains(targetNotebook.children, notebook)}"
-             class="flex">
-            <input type="radio" name="destinationId" th:value="${notebook.id}">
-            <a th:class="${basic}"
-               th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-               href="javascript:void(0)"
-               th:text="${notebook.name}"></a>
-        </div>
-    </th:block>
-</li>
-
 <div layout:fragment="content"
      th:with="notebookList=${mainDataDto.notebookList},
         noteList=${mainDataDto.noteList},
@@ -59,16 +9,17 @@
         searchedNoteList=${mainDataDto.searchedNoteList}
 ">
 
+    <dialog th:replace="~{fragments/modal::moveModal}"/>
+    <dialog th:replace="~{fragments/modal::searchModal}"/>
+    <dialog th:replace="~{fragments/modal::renameModal}"/>
 
-
-    <input type="hidden" id="isSearchModal" th:value="${paramHandler.isSearchModal}">
     <div class="bg-blue-300">
         <a href="/">logo</a>
     </div>
     <div class="flex">
         <div class="bg-indigo-300 w-[20%]">
             <ul class="menu h-[100%] overflow-scroll">
-                <li th:replace="main::noteTree(${notebookList}, ${targetNotebook})">
+                <li th:replace="~{fragments/notebook::noteTree(${notebookList}, ${targetNotebook})}">
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
@@ -81,85 +32,22 @@
             <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
                 <input type="submit" value="삭제" class="postActionBtn">
             </form>
-            <label for="my_modal_6" class="btn">노트 이름 변경</label>
             <a href="/signup" class="btn">회원 가입</a>
             <a href="/logout" class="btn">로그아웃</a>
 
-            <!-- Open the modal using ID.showModal() method -->
-            <button class="btn" onclick="my_modal_1.showModal()">노트 이동</button>
-            <dialog id="my_modal_1" class="modal">
-                <div class="modal-box">
-                    <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
-                        <div>
-                            <ul class="menu h-[100%] overflow-scroll">
-                                <li th:replace="main::moveTree(${notebookList}, ${targetNotebook})">
-                            </ul>
-                        </div>
-                        <div class="flex justify-end">
-                            <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                            <input type="submit" value="이동" class="btn postActionBtn">
-                        </div>
-                    </form>
-                    <div class="modal-action">
-                        <form method="dialog">
-                            <!-- if there is a button in form, it will close the modal -->
-                            <button class="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
+            <button class="btn" onclick="moveModal.showModal()">노트 이동</button>
 
             <button class="btn" onclick="searchModal.showModal()">검색</button>
-            <dialog id="searchModal" class="modal">
-                <div class="modal-box h-[550px]">
-                    <div class="h-[15%]">
-                        <form action="/" class="flex justify-center gap-5">
-
-                            <input type="text" name="keyword" class="input input-bordered search-input" th:value="${paramHandler.keyword}">
-                            <input type="hidden" name="isSearchModal" value="true">
-                            <input type="submit" value="검색" class="btn searchBtn">
-                        </form>
-                    </div>
-                    <ul class="h-[70%] border-2 overflow-auto"
-                        th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='inline-block w-[100%]'">
-                        <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
-                            <i class="fa-solid fa-book p-[5px]"></i>
-                            <a th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}" th:class="${itemAnchorClass}"></a>
-                        </li>
-                        <li th:each="note : ${searchedNoteList}" th:class="${itemHover}">
-                            <i class="fa-solid fa-note-sticky p-[5px]"></i>
-                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}" th:class="${itemAnchorClass}"></a>
-                        </li>
-                    </ul>
-                    <div class="modal-action">
-                        <form method="dialog">
-                            <!-- if there is a button in form, it will close the modal -->
-                            <button class="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
 
             <!-- Put this part before </body> tag -->
-            <input type="checkbox" id="my_modal_6" class="modal-toggle"/>
-            <div class="modal" role="dialog">
-                <div class="modal-box flex flex-col items-center">
-                    <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
+            <button class="btn" onclick="renameModal.showModal()">노트 이름 변경</button>
 
-                        <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                        <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
-                        <input type="submit" class="btn postActionBtn">
-                    </form>
-                    <div class="modal-action flex justify-center">
-                        <label for="my_modal_6" class="btn">Close!</label>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:data-url="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}" class="getActionBtn"></a>
+                    <a th:data-url="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}"
+                       class="getActionBtn"></a>
                 </li>
             </ul>
 
@@ -229,10 +117,48 @@
 
     </script>
     <script>
-        const isSearchModal = document.querySelector("#isSearchModal").value;
-        if (JSON.parse(isSearchModal)) {
-            searchModal.showModal();
+        window.onload = () => {
+            const params = getDefaultParam();
+            const isSearchModal = params.isSearchModal;
+
+            if (JSON.parse(isSearchModal)) {
+                searchModal.showModal();
+            }
+
+            document.querySelectorAll(".postActionBtn").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault(); // 기본 기능 막기
+                    postAction(btn);
+                });
+            });
+
+            document.querySelectorAll(".getActionBtn").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    getAction(btn);
+                });
+            });
+
+            document.querySelector(".sortTitle").addEventListener("click", (e) => {
+                getAction(e.target, (params) => {
+                    params.sort = "title";
+                });
+            });
+            document.querySelector(".sortDate").addEventListener("click", (e) => {
+                getAction(e.target, (params) => {
+                    params.sort = "date";
+                });
+            });
+
+            document.querySelector(".searchBtn").addEventListener("click", (e) => {
+                postAction(e.target, (params) => {
+                    const keyword = document.querySelector(".search-input").value;
+                    params.isSearchModal = true;
+                    params.keyword = keyword;
+                });
+            });
         }
+
 
         // Post 요청이 발생하면 id=params에 있는 값을 가져와서 form에 추가해서 보낸다.
         function postAction(button, callback = null) {
@@ -241,16 +167,16 @@
             const exParams = [];
 
             form.querySelectorAll("input").forEach((input) => {
-               if(input.name !== null && input.type !== "submit") {
-                   exParams.push(input.name);
-               }
+                if (input.name !== null && input.type !== "submit") {
+                    exParams.push(input.name);
+                }
             });
 
-            if(callback !== null)
+            if (callback !== null)
                 callback(params);
 
             Object.entries(params).forEach(([key, value]) => {
-                if(exParams.includes(key)) {
+                if (exParams.includes(key)) {
                     return;
                 }
                 const input = document.createElement("input");
@@ -264,50 +190,19 @@
         }
 
         // form을 싹 다 가져올 것임.
-        document.querySelectorAll(".postActionBtn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-                e.preventDefault(); // 기본 기능 막기
-                postAction(btn);
-            });
-        });
 
 
         function getAction(link, callback = null) {
             const url = link.dataset.url;
             const params = getDefaultParam();
 
-            if(callback !== null)
+            if (callback !== null)
                 callback(params);
 
             const queryString = new URLSearchParams(params).toString();
             location.href = url + '?' + queryString;
         }
 
-        document.querySelectorAll(".getActionBtn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                getAction(btn);
-            });
-        });
-
-        document.querySelector(".sortTitle").addEventListener("click", (e) => {
-            getAction(e.target, (params) => {
-                params.sort = "title";
-            });
-        });
-        document.querySelector(".sortDate").addEventListener("click", (e) => {
-            getAction(e.target, (params) => {
-                params.sort = "date";
-            });
-        });
-
-        document.querySelector(".searchBtn").addEventListener("click", (e) => {
-            postAction(e.target, (params) => {
-                const keyword = document.querySelector(".search-input").value;
-                params.isSearchModal = true;
-                params.keyword = keyword;
-            });
-        });
 
 
         function getDefaultParam() {
@@ -324,4 +219,5 @@
         getDefaultParam();
     </script>
 </div>
+</body>
 </html>
