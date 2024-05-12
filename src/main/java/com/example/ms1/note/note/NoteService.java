@@ -41,4 +41,12 @@ public class NoteService {
     public List<Note> getSearchedNoteList(String keyword) {
         return noteRepository.findByTitleContaining(keyword);
     }
+
+    public List<Note> getSortedListByCreateDate(Notebook targetNotebook) {
+        return noteRepository.findByNotebookOrderByCreateDateDesc(targetNotebook);
+    }
+
+    public List<Note> getSortedListByTitle(Notebook targetNotebook) {
+        return noteRepository.findByNotebookOrderByTitle(targetNotebook);
+    }
 }

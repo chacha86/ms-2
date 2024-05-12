@@ -6,7 +6,7 @@
         <details open>
             <summary class="flex p-0"><a th:class="${basic}"
                                          th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                         th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}|}"
+                                         th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}"
                                          th:text="${notebook.name}"></a></summary>
             <ul>
                 <li th:replace="main::noteTree(${notebook.children}, ${targetNotebook})"></li>
@@ -16,7 +16,7 @@
     <th:block th:if="${#lists.isEmpty(notebook.children)}">
         <a th:class="${basic}"
            th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-           th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}|}" th:text="${notebook.name}"></a>
+           th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}" th:text="${notebook.name}"></a>
     </th:block>
 </li>
 
@@ -76,13 +76,19 @@
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <input type="submit" value="추가">
             </form>
 
             <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <input type="submit" value="하위 노트북 추가">
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <input type="submit" value="삭제">
             </form>
             <label for="my_modal_6" class="btn">노트 이름 변경</label>
@@ -101,6 +107,8 @@
                         </div>
                         <div class="flex justify-end">
                             <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
+                            <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                            <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                             <input type="submit" value="이동" class="btn">
                         </div>
                     </form>
@@ -119,6 +127,7 @@
                     <div class="h-[15%]">
                         <form action="/" class="flex justify-center gap-5">
                             <input type="text" name="keyword" class="input input-bordered" th:value="${paramHandler.keyword}">
+                            <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                             <input type="hidden" name="isSearchModal" value="true">
                             <input type="submit" value="검색" class="btn">
                         </form>
@@ -150,6 +159,8 @@
                     <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
                         <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
                         <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
+                        <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                        <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                         <input type="submit" class="btn">
                     </form>
                     <div class="modal-action flex justify-center">
@@ -161,13 +172,17 @@
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:href="@{|/books/${targetNotebook.id}/notes/${note.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}|}" th:text="${note.title}"></a>
+                    <a th:href="@{|/books/${targetNotebook.id}/notes/${note.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}" th:text="${note.title}"></a>
                 </li>
             </ul>
 
             <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <input type="submit" value="추가">
             </form>
+            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${paramHandler.keyword}&sort=date|}" class="btn">날짜순</a>
+            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${paramHandler.keyword}&sort=title|}" class="btn">이름순</a>
         </div>
 
         <div class="w-[60%]">
@@ -181,12 +196,16 @@
                 </div>
                 <input type="hidden" name="content" id="editor-body">
                 <div id="editor"></div>
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <div>
                     <input type="button" value="수정" onclick="updateForm()">
                 </div>
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/delete|}" method="post"
                   id="deleteForm">
+                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <input type="button" value="삭제" onclick="deleteForm();">
             </form>
         </div>

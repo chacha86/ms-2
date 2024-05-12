@@ -11,14 +11,16 @@ import java.nio.charset.StandardCharsets;
 public class ParamHandler {
     private String keyword;
     private Boolean isSearchModal;
+    private String sort;
 
     public ParamHandler() {
         this.keyword = "";
         this.isSearchModal = false;
+        this.sort = "date";
     }
 
     public String getQueryParam() {
-        return String.format("keyword=%s&isSearchModal=%s", URLEncoder.encode(keyword, StandardCharsets.UTF_8), isSearchModal.toString());
+        return String.format("keyword=%s&isSearchModal=%s&sort=%s", URLEncoder.encode(keyword, StandardCharsets.UTF_8), isSearchModal.toString(), sort);
     }
 
     public String getParamUrl(String url) {

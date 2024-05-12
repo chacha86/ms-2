@@ -38,7 +38,7 @@ public class MainService {
         return mainDataDto;
     }
 
-    public MainDataDto getMainData(Long notebookId, Long noteId, String keyword) {
+    public MainDataDto getMainData(Long notebookId, Long noteId, String keyword, String sort) {
 
         MainDataDto mainDataDto = this.getDefaultMainData(keyword);
         Notebook targetNotebook = this.getNotebook(notebookId);
@@ -46,7 +46,17 @@ public class MainService {
 
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
-        mainDataDto.setNoteList(targetNotebook.getNoteList());
+
+        List<Note> sortedNoteList;
+
+        if(sort.equals("date")) {
+            sortedNoteList = noteService.getSortedListByCreateDate(targetNotebook);
+        }
+        else  {
+            sortedNoteList = noteService.getSortedListByTitle(targetNotebook);
+        }
+
+        mainDataDto.setNoteList(sortedNoteList);
 
         return mainDataDto;
     }
