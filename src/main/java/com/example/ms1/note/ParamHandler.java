@@ -13,4 +13,16 @@ public class ParamHandler {
         this.keyword = "";
         this.isSearchModal = false;
     }
+
+    public String getQueryParam() {
+        return String.format("keyword=%s&isSearchModal=%s", keyword, isSearchModal.toString());
+    }
+
+    public String getParamUrl(String url) {
+        return url + "?" + getQueryParam();
+    }
+
+    public String getRedirectUrl(String url) {
+        return "redirect:" + getParamUrl(url);
+    }
 }
