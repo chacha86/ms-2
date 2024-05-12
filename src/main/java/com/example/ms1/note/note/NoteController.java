@@ -25,10 +25,10 @@ public class NoteController {
     private final MainService mainService;
 
     @PostMapping("/write")
-    public String write(@PathVariable("notebookId") Long notebookId) {
+    public String write(@PathVariable("notebookId") Long notebookId, ParamHandler paramHandler) {
 
         mainService.addToNotebook(notebookId);
-        return "redirect:/";
+        return paramHandler.getRedirectUrl("/");
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class NoteController {
         return "main";
     }
     @PostMapping("/{id}/update")
-    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content) {
+    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content, ParamHandler paramHandler){
         Note note = noteService.getNote(id);
 
         if(title.trim().length() == 0) {
@@ -52,14 +52,14 @@ public class NoteController {
         note.setContent(content);
 
         noteService.save(note);
-        return "redirect:/books/%d/notes/%d".formatted(notebookId, id);
+        return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, id));
     }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id) {
+    public String delete(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, ParamHandler paramHandler) {
 
         noteService.delete(id);
-        return "redirect:/";
+        return paramHandler.getRedirectUrl("/");
     }
 
 
