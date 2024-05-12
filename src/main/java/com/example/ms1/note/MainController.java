@@ -27,6 +27,7 @@ public class MainController {
         MainDataDto mainDataDto = mainService.getDefaultMainData(keyword);
         model.addAttribute("mainDataDto", mainDataDto);
         model.addAttribute("isSearchModal", isSearchModal);
+        model.addAttribute("keyword", keyword);
         return "main";
     }
 

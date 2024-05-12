@@ -6,7 +6,7 @@
         <details open>
             <summary class="flex p-0"><a th:class="${basic}"
                                          th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
-                                         th:href="@{|/books/${notebook.id}|}"
+                                         th:href="@{|/books/${notebook.id}?keyword=${keyword}|}"
                                          th:text="${notebook.name}"></a></summary>
             <ul>
                 <li th:replace="main::noteTree(${notebook.children}, ${targetNotebook})"></li>
@@ -16,7 +16,7 @@
     <th:block th:if="${#lists.isEmpty(notebook.children)}">
         <a th:class="${basic}"
            th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600' : '' "
-           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+           th:href="@{|/books/${notebook.id}?keyword=${keyword}|}" th:text="${notebook.name}"></a>
     </th:block>
 </li>
 
@@ -111,7 +111,7 @@
                 <div class="modal-box h-[550px]">
                     <div class="h-[15%]">
                         <form action="/" class="flex justify-center gap-5">
-                            <input type="text" name="keyword" class="input input-bordered">
+                            <input type="text" name="keyword" class="input input-bordered" th:value="${keyword}">
                             <input type="hidden" name="isSearchModal" value="true">
                             <input type="submit" value="검색" class="btn">
                         </form>
@@ -120,11 +120,11 @@
                         th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='inline-block w-[100%]'">
                         <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
                             <i class="fa-solid fa-book p-[5px]"></i>
-                            <a href="#" th:text="${notebook.name}" th:class="${itemAnchorClass}"></a>
+                            <a th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}" th:class="${itemAnchorClass}"></a>
                         </li>
                         <li th:each="note : ${searchedNoteList}" th:class="${itemHover}">
                             <i class="fa-solid fa-note-sticky p-[5px]"></i>
-                            <a href="#" th:text="${note.title}" th:class="${itemAnchorClass}"></a>
+                            <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}" th:class="${itemAnchorClass}"></a>
                         </li>
                     </ul>
                     <div class="modal-action">

@@ -35,6 +35,7 @@ public class NoteController {
 
         MainDataDto mainDataDto = mainService.getMainData(notebookId, id, keyword);
         model.addAttribute("mainDataDto", mainDataDto);
+        model.addAttribute("keyword", keyword);
 
         return "main";
     }
