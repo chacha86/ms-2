@@ -11,11 +11,13 @@ import java.nio.charset.StandardCharsets;
 public class ParamHandler {
     private String keyword;
     private Boolean isSearchModal;
+    private Boolean isTagModal;
     private String sort;
 
     public ParamHandler() {
         this.keyword = "";
         this.isSearchModal = false;
+        this.isTagModal = false;
         this.sort = "date";
     }
 

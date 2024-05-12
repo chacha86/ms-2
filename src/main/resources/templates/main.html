@@ -6,12 +6,14 @@
         targetNotebook=${mainDataDto.targetNotebook},
         targetNote=${mainDataDto.targetNote},
         searchedNotebookList=${mainDataDto.searchedNotebookList},
-        searchedNoteList=${mainDataDto.searchedNoteList}
+        searchedNoteList=${mainDataDto.searchedNoteList},
+        tagList = ${mainDataDto.tagList}
 ">
 
     <dialog th:replace="~{fragments/modal::moveModal}"/>
     <dialog th:replace="~{fragments/modal::searchModal}"/>
     <dialog th:replace="~{fragments/modal::renameModal}"/>
+    <dialog th:replace="~{fragments/modal::tagModal}"/>
 
     <div class="bg-blue-300">
         <a href="/">logo</a>
@@ -41,6 +43,7 @@
 
             <!-- Put this part before </body> tag -->
             <button class="btn" onclick="renameModal.showModal()">노트 이름 변경</button>
+            <button class="btn" onclick="tagModal.showModal()">태그 목록</button>
 
         </div>
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
@@ -77,6 +80,13 @@
                   id="deleteForm">
                 <input type="button" value="삭제" onclick="deleteForm();" class="postActionBtn">
             </form>
+            <ul class="flex gap-5">
+                <li th:each="noteTag : ${targetNote.noteTagList}">
+                    <form th:action="@{|/notes/${targetNote.id}/tags/${noteTag.id}/delete|}" method="post">
+                        <input type="submit" th:value="${noteTag.tag.name}" class="btn">
+                    </form>
+                </li>
+            </ul>
             <form th:action="@{|/notes/${targetNote.id}/tags/create|}" method="post">
                 <input type="text" name="name" class="input input-bordered" placeholder="태그 추가">
                 <input type="submit" class="postActionBtn btn" value="추가">
@@ -89,6 +99,7 @@
         </div>
         <div>
             <input type="hidden" id="isSearchModal" name="isSearchModal" th:value="${paramHandler.isSearchModal}">
+            <input type="hidden" id="isTagModal" name="isTagModal" th:value="${paramHandler.isTagModal}">
         </div>
     </div>
     <script th:inline="javascript">
@@ -125,9 +136,14 @@
     <script>
         window.onload = () => {
             const isSearchModal = document.querySelector("#isSearchModal").value;
+            const isTagModal = document.querySelector("#isTagModal").value;
+
 
             if (JSON.parse(isSearchModal)) {
                 searchModal.showModal();
+            }
+            if(JSON.parse(isTagModal)){
+                tagModal.showModal();
             }
 
             document.querySelectorAll(".postActionBtn").forEach((btn) => {
@@ -215,6 +231,7 @@
         }
     </script>
     <script th:replace="~{fragments/modal::searchModalJs}" />
+    <script th:replace="~{fragments/modal::tagModalJs}" />
 </div>
 </body>
 </html>

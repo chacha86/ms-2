@@ -14,6 +14,10 @@ public class NoteTagService {
     private final NoteService noteService;
     private final TagService tagService;
 
+    public NoteTag getNoteTag(Long noteTagId) {
+        return noteTagRepository.findById(noteTagId).orElseThrow();
+    }
+
     public NoteTag create(Long noteId, String name) {
         Note note = noteService.getNote(noteId);
         Tag tag = tagService.create(name);
@@ -23,5 +27,9 @@ public class NoteTagService {
         noteTag.setTag(tag);
 
         return noteTagRepository.save(noteTag);
+    }
+
+    public void delete(Long noteTagId) {
+        noteTagRepository.deleteById(noteTagId);
     }
 }
