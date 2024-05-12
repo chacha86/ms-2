@@ -72,20 +72,14 @@
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                <input type="submit" value="추가">
+                <input type="submit" value="추가" class="postActionBtn">
             </form>
 
             <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                <input type="submit" value="하위 노트북 추가">
+                <input type="submit" value="하위 노트북 추가" class="postActionBtn">
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                <input type="submit" value="삭제">
+                <input type="submit" value="삭제" class="postActionBtn">
             </form>
             <label for="my_modal_6" class="btn">노트 이름 변경</label>
             <a href="/signup" class="btn">회원 가입</a>
@@ -103,9 +97,7 @@
                         </div>
                         <div class="flex justify-end">
                             <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
-                            <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                            <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                            <input type="submit" value="이동" class="btn">
+                            <input type="submit" value="이동" class="btn postActionBtn">
                         </div>
                     </form>
                     <div class="modal-action">
@@ -123,9 +115,8 @@
                     <div class="h-[15%]">
                         <form action="/" class="flex justify-center gap-5">
                             <input type="text" name="keyword" class="input input-bordered" th:value="${paramHandler.keyword}">
-                            <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                             <input type="hidden" name="isSearchModal" value="true">
-                            <input type="submit" value="검색" class="btn">
+                            <input type="submit" value="검색" class="btn postActionBtn">
                         </form>
                     </div>
                     <ul class="h-[70%] border-2 overflow-auto"
@@ -155,9 +146,7 @@
                     <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
                         <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
                         <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
-                        <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                        <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                        <input type="submit" class="btn">
+                        <input type="submit" class="btn postActionBtn">
                     </form>
                     <div class="modal-action flex justify-center">
                         <label for="my_modal_6" class="btn">Close!</label>
@@ -168,17 +157,15 @@
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:href="@{|/books/${targetNotebook.id}/notes/${note.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}&param1=${}|}" th:text="${note.title}"></a>
+                    <a th:data-url="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}" class="getActionBtn"></a>
                 </li>
             </ul>
 
             <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                <input type="submit" value="추가">
+                <input type="submit" value="추가" class="postActionBtn">
             </form>
-            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${paramHandler.keyword}&sort=date|}" class="btn">날짜순</a>
-            <a th:href="@{|/books/${targetNotebook.id}/notes/${targetNote.id}?keyword=${paramHandler.keyword}&sort=title|}" class="btn">이름순</a>
+            <a th:data-url="@{|/books/${targetNotebook.id}/notes/${targetNote.id}|}" class="btn getActionBtn">날짜순</a>
+            <a th:data-url="@{|/books/${targetNotebook.id}/notes/${targetNote.id}|}" class="btn sortTitle">이름순</a>
         </div>
 
         <div class="w-[60%]">
@@ -192,17 +179,13 @@
                 </div>
                 <input type="hidden" name="content" id="editor-body">
                 <div id="editor"></div>
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
                 <div>
-                    <input type="button" value="수정" onclick="updateForm()">
+                    <input type="button" value="수정" onclick="updateForm()" class="postActionBtn">
                 </div>
             </form>
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/delete|}" method="post"
                   id="deleteForm">
-                <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-                <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-                <input type="button" value="삭제" onclick="deleteForm();">
+                <input type="button" value="삭제" onclick="deleteForm();" class="postActionBtn">
             </form>
         </div>
 
@@ -248,6 +231,56 @@
         if (JSON.parse(isSearchModal)) {
             searchModal.showModal();
         }
+
+        // Post 요청이 발생하면 id=params에 있는 값을 가져와서 form에 추가해서 보낸다.
+        function postAction(button) {
+            const form = button.form;
+            const params = getDefaultParam();
+
+            Object.entries(params).forEach(([key, value]) => {
+                const input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", key);
+                input.setAttribute("value", value);
+                form.appendChild(input);
+            });
+
+            form.submit();
+        }
+
+        // form을 싹 다 가져올 것임.
+        document.querySelectorAll(".postActionBtn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault(); // 기본 기능 막기
+                postAction(btn);
+            });
+        });
+
+
+        function getAction(link, callback = null) {
+            const url = link.dataset.url;
+            const params = getDefaultParam();
+
+            if(callback !== null)
+                callback(params);
+
+            const queryString = new URLSearchParams(params).toString();
+            location.href = url + '?' + queryString;
+        }
+
+        document.querySelectorAll(".getActionBtn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                getAction(btn);
+            });
+        });
+
+        document.querySelector(".sortTitle").addEventListener("click", (e) => {
+            getAction(e.target, (params) => {
+                params.sort = "title";
+            });
+        });
+
 
         function getDefaultParam() {
             const paramInputList = document.querySelectorAll("#params input");
