@@ -33,14 +33,14 @@
             </form>
         </div>
         <ul class="h-[70%] border-2 overflow-auto"
-            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='inline-block w-[100%]'">
+            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
             <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
                 <i class="fa-solid fa-book p-[5px]"></i>
-                <a th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}" th:class="${itemAnchorClass}"></a>
+                <a th:data-url="@{|/books/${notebook.id}|}" th:text="${notebook.name}" th:class="${itemAnchorClass}"></a>
             </li>
             <li th:each="note : ${searchedNoteList}" th:class="${itemHover}">
                 <i class="fa-solid fa-note-sticky p-[5px]"></i>
-                <a th:href="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}" th:class="${itemAnchorClass}"></a>
+                <a th:data-url="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}" th:class="${itemAnchorClass}"></a>
             </li>
         </ul>
         <div class="modal-action">
@@ -52,6 +52,15 @@
     </div>
 </dialog>
 
+<script th:fragment="searchModalJs">
+    document.querySelector(".searchBtn").addEventListener("click", (e) => {
+        postAction(e.target, (params) => {
+            const keyword = document.querySelector(".search-input").value;
+            params.isSearchModal = true;
+            params.keyword = keyword;
+        });
+    });
+</script>
 
 <dialog th:fragment="renameModal" id="renameModal" class="modal">
     <div class="modal-box flex flex-col items-center">

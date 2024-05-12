@@ -20,7 +20,7 @@ public class ParamHandler {
     }
 
     public String getQueryParam() {
-        return String.format("keyword=%s&isSearchModal=%s&sort=%s", URLEncoder.encode(keyword, StandardCharsets.UTF_8), isSearchModal.toString(), sort);
+        return String.format("keyword=%s&sort=%s", URLEncoder.encode(keyword, StandardCharsets.UTF_8), sort);
     }
 
     public String getParamUrl(String url) {
