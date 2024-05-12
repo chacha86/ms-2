@@ -9,10 +9,7 @@ import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,12 +19,10 @@ public class MainController {
     private final MainService mainService;
 
     @RequestMapping("/")
-    public String main(Model model, String keyword, @RequestParam(defaultValue = "false") String isSearchModal) {
+    public String main(Model model, ParamHandler paramHandler) {
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData(keyword);
+        MainDataDto mainDataDto = mainService.getDefaultMainData(paramHandler.getKeyword());
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("isSearchModal", isSearchModal);
-        model.addAttribute("keyword", keyword);
         return "main";
     }
 
