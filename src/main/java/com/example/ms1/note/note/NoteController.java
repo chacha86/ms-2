@@ -2,6 +2,7 @@ package com.example.ms1.note.note;
 
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
+import com.example.ms1.note.ParamHandler;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
@@ -31,11 +32,11 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String keyword) {
+    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id,
+                         ParamHandler paramHandler) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, keyword);
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, paramHandler.getKeyword());
         model.addAttribute("mainDataDto", mainDataDto);
-        model.addAttribute("keyword", keyword);
 
         return "main";
     }
