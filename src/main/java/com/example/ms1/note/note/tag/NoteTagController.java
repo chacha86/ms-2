@@ -19,4 +19,13 @@ public class NoteTagController {
         Long notebookId = noteTag.getNote().getNotebook().getId();
         return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, noteId));
     }
+
+    @PostMapping("{noteTagId}/delete")
+    public String delete(@PathVariable("noteId") Long noteId, @PathVariable("noteTagId") Long noteTagId, ParamHandler paramHandler) {
+        NoteTag noteTag = noteTagService.getNoteTag(noteTagId);
+        Long notebookId = noteTag.getNote().getNotebook().getId();
+        noteTagService.delete(noteTagId);
+
+        return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, noteId));
+    }
 }
