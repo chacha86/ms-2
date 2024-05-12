@@ -8,4 +8,9 @@ import lombok.Setter;
 public class ParamHandler {
     private String keyword;
     private Boolean isSearchModal;
+
+    public ParamHandler() {
+        this.keyword = "";
+        this.isSearchModal = false;
+    }
 }
