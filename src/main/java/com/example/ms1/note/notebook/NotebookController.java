@@ -44,19 +44,19 @@ public class NotebookController {
     public String delete(@PathVariable("id") Long id) {
 //        mainService.delete(id);
         notebookService.delete(id);
-        return "redirect:/";
+        return "redirect:/?keyword=";
     }
 
     @PostMapping("/books/{id}/update")
     public String update(@PathVariable("id") Long id, Long targetNoteId, String name) {
         notebookService.updateName(id, name);
-        return "redirect:/books/%d/notes/%d".formatted(id, targetNoteId);
+        return "redirect:/books/%d/notes/%d?keyword=".formatted(id, targetNoteId);
     }
 
     @PostMapping("/books/{id}/move")
     public String move(@PathVariable("id") Long id, Long destinationId, Long targetNoteId) {
         notebookService.move(id, destinationId);
 
-        return "redirect:/books/%d/notes/%d".formatted(destinationId, targetNoteId);
+        return "redirect:/books/%d/notes/%d?keyword=".formatted(destinationId, targetNoteId);
     }
 }
