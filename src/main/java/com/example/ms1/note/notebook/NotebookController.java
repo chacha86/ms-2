@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.net.URLEncoder;
+
 @Controller
 @RequiredArgsConstructor
 public class NotebookController {
@@ -31,11 +33,11 @@ public class NotebookController {
     }
 
     @GetMapping("/books/{id}")
-    public String detail(@PathVariable("id") Long id) {
+    public String detail(@PathVariable("id") Long id, String keyword) {
         Notebook notebook = notebookService.getNotebook(id);
         Note note = notebook.getNoteList().get(0);
 
-        return "redirect:/books/%d/notes/%d".formatted(id, note.getId());
+        return "redirect:/books/%d/notes/%d?keyword=%s".formatted(id, note.getId(), URLEncoder.encode(keyword));
     }
 
     @PostMapping("/books/{id}/delete")
