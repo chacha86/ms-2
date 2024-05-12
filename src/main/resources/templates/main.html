@@ -59,11 +59,6 @@
         searchedNoteList=${mainDataDto.searchedNoteList}
 ">
 
-    <div id="params">
-        <input type="hidden" name="isSearchModal" th:value="${paramHandler.isSearchModal}">
-        <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
-        <input type="hidden" name="sort" th:value="${paramHandler.sort}">
-    </div>
 
 
     <input type="hidden" id="isSearchModal" th:value="${paramHandler.isSearchModal}">
@@ -210,6 +205,12 @@
                 <input type="button" value="삭제" onclick="deleteForm();">
             </form>
         </div>
+
+        <div id="params">
+            <input type="hidden" name="isSearchModal" th:value="${paramHandler.isSearchModal}">
+            <input type="hidden" name="keyword" th:value="${paramHandler.keyword}">
+            <input type="hidden" name="sort" th:value="${paramHandler.sort}">
+        </div>
     </div>
     <script th:inline="javascript">
         const Editor = toastui.Editor;
@@ -250,7 +251,13 @@
 
         function getDefaultParam() {
             const paramInputList = document.querySelectorAll("#params input");
-            console.log(paramInputList);
+
+            const params = {};
+            paramInputList.forEach((input) => {
+                params[input.name] = input.value;
+            });
+
+            return params;
         }
 
         getDefaultParam();
