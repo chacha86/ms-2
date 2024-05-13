@@ -2,6 +2,8 @@ package com.example.ms1.note;
 
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteService;
+import com.example.ms1.note.note.tag.tag.Tag;
+import com.example.ms1.note.note.tag.tag.TagService;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
@@ -17,8 +19,9 @@ public class MainService {
 
     private final NotebookService notebookService;
     private final NoteService noteService;
+    private final TagService tagService;
 
-    public MainDataDto getDefaultMainData() {
+    public MainDataDto getDefaultMainData(String keyword) {
 //        List<Notebook> notebookList = notebookService.getNotebookList(); // 전체 노트북 리스트
         List<Notebook> notebookList = notebookService.getTopNotebookList();
 
@@ -31,19 +34,33 @@ public class MainService {
         List<Note> noteList = targetNotebook.getNoteList();
         Note targetNote = noteList.get(0);
 
-        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote);
+        List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
+        List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
+        List<Tag> tagList = tagService.getTagList();
+
+        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, searchedNotebookList, searchedNoteList, tagList);
         return mainDataDto;
     }
 
-    public MainDataDto getMainData(Long notebookId, Long noteId) {
+    public MainDataDto getMainData(Long notebookId, Long noteId, String keyword, String sort) {
 
-        MainDataDto mainDataDto = this.getDefaultMainData();
+        MainDataDto mainDataDto = this.getDefaultMainData(keyword);
         Notebook targetNotebook = this.getNotebook(notebookId);
         Note targetNote = noteService.getNote(noteId);
 
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);
-        mainDataDto.setNoteList(targetNotebook.getNoteList());
+
+        List<Note> sortedNoteList;
+
+        if(sort.equals("date")) {
+            sortedNoteList = noteService.getSortedListByCreateDate(targetNotebook);
+        }
+        else  {
+            sortedNoteList = noteService.getSortedListByTitle(targetNotebook);
+        }
+
+        mainDataDto.setNoteList(sortedNoteList);
 
         return mainDataDto;
     }
