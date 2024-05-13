@@ -24,14 +24,14 @@
                 <li th:replace="~{fragments/notebook::noteTree(${notebookList}, ${targetNotebook})}">
             </ul>
 
-            <form th:action="@{|/books/write|}" method="post">
+            <form th:action="${@notebookUrlHandler.write()}" method="post">
                 <input type="submit" value="추가" class="postActionBtn">
             </form>
 
-            <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
+            <form th:action="${@notebookUrlHandler.groupWrite(targetNotebook.id)}" method="post">
                 <input type="submit" value="하위 노트북 추가" class="postActionBtn">
             </form>
-            <form th:action="@{|/books/${targetNotebook.id}/delete|}" method="post">
+            <form th:action="${@notebookUrlHandler.delete(targetNotebook.id)}" method="post">
                 <input type="submit" value="삭제" class="postActionBtn">
             </form>
             <a href="/signup" class="btn">회원 가입</a>
@@ -49,19 +49,19 @@
         <div class="bg-red-300 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? 'bg-blue-600' : ''">
-                    <a th:data-url="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}"
+                    <a th:data-url="${@noteUrlHandler.bookNote(targetNotebook.id, note.id)}" th:text="${note.title}"
                        class="getActionBtn"></a>
                 </li>
             </ul>
-            <form th:action="@{|/books/${targetNotebook.id}/notes/write|}" method="post">
+            <form th:action="${@noteUrlHandler.write()}" method="post">
                 <input type="submit" value="추가" class="postActionBtn">
             </form>
-            <a th:data-url="@{|/books/${targetNotebook.id}/notes/${targetNote.id}|}" class="btn sortDate">날짜순</a>
-            <a th:data-url="@{|/books/${targetNotebook.id}/notes/${targetNote.id}|}" class="btn sortTitle">이름순</a>
+            <a th:data-url="${@noteUrlHandler.bookNote(targetNotebook.id, targetNote.id)}" class="btn sortDate">날짜순</a>
+            <a th:data-url="${@noteUrlHandler.bookNote(targetNotebook.id, targetNote.id)}" class="btn sortTitle">이름순</a>
         </div>
 
         <div class="w-[60%]">
-            <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/update|}" method="post"
+            <form th:action="${@noteUrlHandler.update(targetNotebook.id, targetNote.id)}" method="post"
                   id="updateForm">
                 <div>
                     <input type="hidden" name="id" th:value="${targetNote.id}">
@@ -75,7 +75,7 @@
                     <input type="button" value="수정" onclick="updateForm()" class="postActionBtn">
                 </div>
             </form>
-            <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/delete|}" method="post"
+            <form th:action="${@noteUrlHandler.delete(targetNotebook.id, targetNote.id)}" method="post"
                   id="deleteForm">
                 <input type="button" value="삭제" onclick="deleteForm();" class="postActionBtn">
             </form>

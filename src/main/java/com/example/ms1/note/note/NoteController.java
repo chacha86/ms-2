@@ -2,10 +2,12 @@ package com.example.ms1.note.note;
 
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
+import com.example.ms1.note.MainUrlHandler;
 import com.example.ms1.note.ParamHandler;
 import com.example.ms1.note.notebook.Notebook;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
+import com.example.ms1.note.notebook.NotebookUrlHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,21 +20,20 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/books/{notebookId}/notes")
 public class NoteController {
 
     private final NoteService noteService;
     private final MainService mainService;
 
-    @PostMapping("/write")
-    public String write(@PathVariable("notebookId") Long notebookId, ParamHandler paramHandler) {
+    @PostMapping(NoteUrlHandler.WRITE)
+    public String write(@PathVariable(NotebookUrlHandler.ID) Long notebookId, ParamHandler paramHandler) {
 
         mainService.addToNotebook(notebookId);
-        return paramHandler.getRedirectUrl("/");
+        return paramHandler.getRedirectUrl(MainUrlHandler.BASE);
     }
 
-    @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id,
+    @GetMapping(NoteUrlHandler.BOOK_NOTE)
+    public String detail(Model model, @PathVariable(NotebookUrlHandler.ID) Long notebookId, @PathVariable(NoteUrlHandler.ID) Long id,
                          ParamHandler paramHandler) {
 
         MainDataDto mainDataDto = mainService.getMainData(notebookId, id, paramHandler.getKeyword(), paramHandler.getSort());
@@ -40,11 +41,14 @@ public class NoteController {
 
         return "main";
     }
-    @PostMapping("/{id}/update")
-    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content, ParamHandler paramHandler){
+
+    @PostMapping(NoteUrlHandler.UPDATE)
+    public String update(@PathVariable(NotebookUrlHandler.ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.ID) Long id,
+                         String title, String content, ParamHandler paramHandler) {
         Note note = noteService.getNote(id);
 
-        if(title.trim().length() == 0) {
+        if (title.trim().length() == 0) {
             title = "제목 없음";
         }
 
@@ -52,14 +56,15 @@ public class NoteController {
         note.setContent(content);
 
         noteService.save(note);
-        return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, id));
+        return paramHandler.getRedirectUrl(NoteUrlHandler.bookNote(notebookId, id));
     }
 
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, ParamHandler paramHandler) {
+    @PostMapping(NoteUrlHandler.DELETE)
+    public String delete(@PathVariable(NotebookUrlHandler.ID) Long notebookId,
+                         @PathVariable(NoteUrlHandler.ID) Long id, ParamHandler paramHandler) {
 
         noteService.delete(id);
-        return paramHandler.getRedirectUrl("/");
+        return paramHandler.getRedirectUrl(MainUrlHandler.BASE);
     }
 
 

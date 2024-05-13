@@ -1,6 +1,6 @@
 <dialog th:fragment="moveModal" id="moveModal" class="modal">
     <div class="modal-box">
-        <form th:action="@{|/books/${targetNotebook.id}/move|}" method="post">
+        <form th:action="${@notebookUrlHandler.move(targetNotebook.id)}" method="post">
             <div>
                 <ul class="menu h-[100%] overflow-scroll">
                     <li th:replace="~{fragments/notebook::moveTree(${notebookList}, ${targetNotebook})}">
@@ -24,7 +24,7 @@
 <dialog th:fragment="searchModal" id="searchModal" class="modal">
     <div class="modal-box h-[550px]">
         <div class="h-[15%]">
-            <form action="/" class="flex justify-center gap-5">
+            <form th:action="${@mainUrlHandler.BASE}" class="flex justify-center gap-5">
 
                 <input type="text" name="keyword" class="input input-bordered search-input"
                        th:value="${paramHandler.keyword}">
@@ -36,7 +36,7 @@
             th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
             <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
                 <i class="fa-solid fa-book p-[5px]"></i>
-                <a th:data-url="@{|/books/${notebook.id}|}" th:text="${notebook.name}"
+                <a th:data-url="${@notebookUrlHandler.book(notebook.id)}" th:text="${notebook.name}"
                    th:class="${itemAnchorClass}"></a>
             </li>
             <li th:each="note : ${searchedNoteList}" th:class="${itemHover}">
@@ -66,7 +66,7 @@
 
 <dialog th:fragment="renameModal" id="renameModal" class="modal">
     <div class="modal-box flex flex-col items-center">
-        <form th:action="@{|/books/${targetNotebook.id}/update|}" class="flex" method="post">
+        <form th:action="${@notebookUrlHandler.update(targetNotebook.id)}" class="flex" method="post">
 
             <input type="hidden" name="targetNoteId" th:value="${targetNote.id}">
             <input type="text" name="name" class="border-2" th:value="${targetNotebook.name}">
@@ -97,7 +97,7 @@
         <ul class="h-[50%] border-2 overflow-auto"
             th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
             <li th:each="note : ${noteListByTag}" th:class="${itemHover}">
-                <a th:data-url="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}"
+                <a th:data-url="${@noteUrlHandler.bookNote(note.notebook.id, note.id)}" th:text="${note.title}"
                    th:class="${itemAnchorClass}"></a>
             </li>
         </ul>
