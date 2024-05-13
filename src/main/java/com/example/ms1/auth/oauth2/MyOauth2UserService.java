@@ -19,75 +19,80 @@ public class MyOauth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+    enum SocialType {
+        GOOGLE("google"),
+        KAKAO("kakao"),
+        NAVER("naver");
+
+        private String name;
+
+        SocialType(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return name;
+        }
+    }
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User user = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        SocialType socialType = SocialType.valueOf(registrationId.toUpperCase());
 
-        switch (registrationId) {
-            case "google":
-                return googleService(user);
-            case "kakao":
-                return kakaoService(user);
-            case "naver":
-                return naverService(user);
+        MySocialUser mySocialUser;
+
+        switch (socialType) {
+            case GOOGLE ->
+                mySocialUser = googleService(user);
+            case KAKAO ->
+                mySocialUser = kakaoService(user);
+            case NAVER ->
+                mySocialUser = naverService(user);
+            default -> {
+                throw new IllegalArgumentException("지원하지 않는 소셜 로그인입니다.");
+            }
+        }
+
+        Member member = memberRepository.findByLoginId(mySocialUser.getSub()).orElse(null);
+
+        if (member == null) {
+            member = new Member();
+            member.setLoginId(mySocialUser.getSub());
+            member.setEmail(mySocialUser.getEmail());
+            member.setNickname(mySocialUser.getRegistrationId() + "_" + mySocialUser.getSub());
+            member.setPassword("");
+            member.setCreateDate(LocalDateTime.now());
+
+            memberRepository.save(member);
         }
 
         return super.loadUser(userRequest);
     }
 
-    private OAuth2User googleService(OAuth2User user) {
+    private MySocialUser googleService(OAuth2User user) {
 
-        String registrationId = "google";
+        String registrationId = SocialType.GOOGLE.getValue();
         String sub = user.getAttribute("sub");
         String email = user.getAttribute("email");
 
-        Member member = memberRepository.findByLoginId(sub).orElse(null);
-
-        if(member == null) {
-            saveMember(registrationId, sub, email);
-        }
-
-        return user;
+        return new MySocialUser(registrationId, sub, email);
     }
 
-    private OAuth2User kakaoService(OAuth2User user) {
-        String registrationId = "kakao";
+    private MySocialUser kakaoService(OAuth2User user) {
+        String registrationId = SocialType.KAKAO.getValue();
         Long sub = user.getAttribute("id");
         String email = null;
 
-        Member member = memberRepository.findByLoginId(String.valueOf(sub)).orElse(null);
-
-        if(member == null) {
-            saveMember(registrationId, String.valueOf(sub), email);
-        }
-
-        return user;
+        return new MySocialUser(registrationId, sub.toString(), email);
     }
 
-    private OAuth2User naverService(OAuth2User user) {
-        String registrationId = "naver";
+    private MySocialUser naverService(OAuth2User user) {
+        String registrationId = SocialType.NAVER.getValue();
         Map<String, String> response = user.getAttribute("response");
         String sub = response.get("id");
         String email = response.get("email");
 
-        Member member = memberRepository.findByLoginId(sub).orElse(null);
-
-        if(member == null) {
-            saveMember(registrationId, sub, email);
-        }
-
-        return user;
-    }
-
-    private Member saveMember(String registrationId, String sub, String email) {
-        Member member = new Member();
-        member.setLoginId(sub);
-        member.setEmail(email);
-        member.setNickname(registrationId + "_" + sub);
-        member.setPassword("");
-        member.setCreateDate(LocalDateTime.now());
-
-        return memberRepository.save(member);
+        return new MySocialUser(registrationId, sub, email);
     }
 }
