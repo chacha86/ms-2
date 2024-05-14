@@ -25,6 +25,6 @@ public class Note {
     @ManyToOne(fetch = FetchType.LAZY)
     private Notebook notebook;
 
-    @OneToMany(mappedBy = "note")
+    @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE)
     private List<NoteTag> noteTagList = new ArrayList<>();
 }

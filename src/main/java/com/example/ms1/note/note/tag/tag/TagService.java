@@ -14,6 +14,9 @@ public class TagService {
     public Tag getTag(Long tagId) {
         return tagRepository.findById(tagId).orElseThrow();
     }
+    public Tag getTagOrNull(String name) {
+        return tagRepository.findByName(name).orElse(null);
+    }
 
     public Tag create(String name) {
         Tag tag = new Tag();

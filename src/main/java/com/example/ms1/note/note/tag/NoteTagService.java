@@ -20,7 +20,11 @@ public class NoteTagService {
 
     public NoteTag create(Long noteId, String name) {
         Note note = noteService.getNote(noteId);
-        Tag tag = tagService.create(name);
+
+        Tag tag = tagService.getTagOrNull(name);
+        if (tag == null) {
+            tag = tagService.create(name);
+        }
 
         NoteTag noteTag = new NoteTag();
         noteTag.setNote(note);
