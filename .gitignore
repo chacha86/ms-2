@@ -3,7 +3,7 @@ HELP.md
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
-!**/src/test/**/build/
+!react/src/app/test/**/build/
 
 ### STS ###
 .apt_generated
@@ -15,7 +15,7 @@ build/
 .sts4-cache
 bin/
 !**/src/main/**/bin/
-!**/src/test/**/bin/
+!react/src/app/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
@@ -24,7 +24,7 @@ bin/
 *.ipr
 out/
 !**/src/main/**/out/
-!**/src/test/**/out/
+!react/src/app/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### front-end ###
+/nextjs/node_modules/
+/nextjs/.next/
