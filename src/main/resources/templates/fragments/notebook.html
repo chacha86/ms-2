@@ -1,9 +1,9 @@
 <li th:fragment="noteTree(notebookList, targetNotebook)" th:each="notebook : ${notebookList}"
-    th:with="basic='w-[90%] p-[10px]'">
+    th:with="basic='w-[100%] p-[10px]'">
     <th:block th:if="${!#lists.isEmpty(notebook.children)}">
         <details open>
             <summary class="flex p-0"><a th:class="${basic}"
-                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600':''"
+                                         th:classappend="${notebook.id == targetNotebook.id} ? 'bg-blue-600 rounded-[7px]':''"
                                          th:href="@{|/books/${notebook.id}?keyword=${paramHandler.keyword}&isSearchModal=${paramHandler.isSearchModal}&sort=${paramHandler.sort}|}"
                                          th:text="${notebook.name}"></a></summary>
             <ul>

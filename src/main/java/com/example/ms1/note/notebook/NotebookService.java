@@ -49,4 +49,8 @@ public class NotebookService {
     public List<Notebook> getSearchedNotebookList(String keyword) {
         return notebookRepository.findByNameContaining(keyword);
     }
+
+    public List<NotebookDto> convertToDtoList(List<Notebook> notebookList) {
+        return notebookList.stream().map(Notebook::toDto).toList();
+    }
 }

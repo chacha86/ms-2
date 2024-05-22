@@ -1,6 +1,8 @@
 package com.example.ms1.note.notebook;
 
 import com.example.ms1.note.note.Note;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,5 +37,12 @@ public class Notebook {
     public void addNote(Note note) {
         note.setNotebook(this);
         noteList.add(note);
+    }
+
+    public NotebookDto toDto() {
+        NotebookDto notebookDto = new NotebookDto();
+        notebookDto.setId(this.id);
+        notebookDto.setName(this.name);
+        return notebookDto;
     }
 }

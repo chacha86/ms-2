@@ -49,4 +49,8 @@ public class NoteService {
     public List<Note> getSortedListByTitle(Notebook targetNotebook) {
         return noteRepository.findByNotebookOrderByTitle(targetNotebook);
     }
+
+    public List<NoteDto> convertToDtoList(List<Note> noteList) {
+        return noteList.stream().map(Note::toDto).toList();
+    }
 }

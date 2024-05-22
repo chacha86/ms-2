@@ -31,4 +31,11 @@ public class MainController {
     public String test(String fruits) {
         return fruits;
     }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public SearchDataDto search(String keyword) {
+        SearchDataDto searchDataDto = mainService.getSearchData(keyword);
+        return searchDataDto;
+    }
 }

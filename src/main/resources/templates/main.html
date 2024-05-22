@@ -5,8 +5,8 @@
         noteList=${mainDataDto.noteList},
         targetNotebook=${mainDataDto.targetNotebook},
         targetNote=${mainDataDto.targetNote},
-        searchedNotebookList=${mainDataDto.searchedNotebookList},
-        searchedNoteList=${mainDataDto.searchedNoteList},
+        searchedNotebookList=${mainDataDto.searchDataDto.searchedNotebookList},
+        searchedNoteList=${mainDataDto.searchDataDto.searchedNoteList},
         tagList = ${mainDataDto.tagList}
 ">
 
@@ -230,6 +230,7 @@
             return params;
         }
     </script>
+    <script src="/test.js"></script>
     <script th:replace="~{fragments/modal::searchModalJs}" />
     <script th:replace="~{fragments/modal::tagModalJs}" />
 </div>

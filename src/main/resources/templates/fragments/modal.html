@@ -25,14 +25,13 @@
     <div class="modal-box h-[550px]">
         <div class="h-[15%]">
             <form action="/" class="flex justify-center gap-5">
-
                 <input type="text" name="keyword" class="input input-bordered search-input"
                        th:value="${paramHandler.keyword}">
                 <input type="hidden" name="isSearchModal" value="true">
                 <input type="submit" value="검색" class="btn searchBtn">
             </form>
         </div>
-        <ul class="h-[70%] border-2 overflow-auto"
+        <ul id="searchResultList" class="h-[70%] border-2 overflow-auto"
             th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
             <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
                 <i class="fa-solid fa-book p-[5px]"></i>
@@ -47,21 +46,45 @@
         </ul>
         <div class="modal-action">
             <form method="dialog">
-                <!-- if there is a button in form, it will close the modal -->
                 <button class="btn">Close</button>
             </form>
         </div>
     </div>
 </dialog>
-
 <script th:fragment="searchModalJs">
-    document.querySelector(".searchBtn").addEventListener("click", (e) => {
-        postAction(e.target, (params) => {
-            const keyword = document.querySelector(".search-input").value;
-            params.isSearchModal = true;
-            params.keyword = keyword;
-        });
+    document.querySelector(".searchBtn").addEventListener("click", async (e) => {
+        e.preventDefault();
+        const keyword = document.querySelector(".search-input").value;
+        const data = await getFetch('/search', {keyword : keyword});
+        renderSearchModal(data);
     });
+
+    const renderSearchModal = (data) => {
+
+        console.log(data);
+        const searchResultList = document.querySelector("#searchResultList");
+        const itemHover = 'hover:bg-blue-600 hover:text-white p-[10px] flex';
+        const itemAnchorClass = 'getActionBtn inline-block w-[100%]';
+        searchResultList.innerHTML = '';
+        searchResultList.innerHTML = `${data.searchedNotebookList.map((notebook) => {
+            return `
+                <li class="${itemHover}">
+                    <i class="fa-solid fa-book p-[5px]"></i>
+                    <a data-url="/books/${notebook.id}"
+                       th:class="${itemAnchorClass}">${notebook.name}</a>
+                </li>
+                `
+        }).join('')}
+        ${data.searchedNoteList.map((note) => {
+            return `
+                <li class="${itemHover}">
+                    <i class="fa-solid fa-note-sticky p-[5px]"></i>
+                    <a data-url="/books/${note.notebook.id}/notes/${note.id}"
+                       th:class="${itemAnchorClass}">${note.title}</a>
+                </li>
+                `
+        }).join('')}`
+    };
 </script>
 
 <dialog th:fragment="renameModal" id="renameModal" class="modal">
