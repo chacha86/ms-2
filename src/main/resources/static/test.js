@@ -1,4 +1,4 @@
-getFetch = async (url, params) => {
+getFetch = async (url, params={}) => {
     const queryString = new URLSearchParams(params).toString();
     url = url + '?' + queryString;
     console.log(url);

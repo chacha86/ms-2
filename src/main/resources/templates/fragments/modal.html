@@ -32,7 +32,7 @@
             </form>
         </div>
         <ul id="searchResultList" class="h-[70%] border-2 overflow-auto"
-            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
+            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='searchItem inline-block w-[100%]'">
             <li th:each="notebook : ${searchedNotebookList}" th:class="${itemHover}">
                 <i class="fa-solid fa-book p-[5px]"></i>
                 <a th:data-url="@{|/books/${notebook.id}|}" th:text="${notebook.name}"
@@ -55,23 +55,28 @@
     document.querySelector(".searchBtn").addEventListener("click", async (e) => {
         e.preventDefault();
         const keyword = document.querySelector(".search-input").value;
-        const data = await getFetch('/search', {keyword : keyword});
+        const data = await getFetch('/search', {keyword: keyword});
         renderSearchModal(data);
+    });
+    document.querySelectorAll(".searchItem").forEach((searchItem) => {
+        searchItem.addEventListener("click", (e) => {
+            console.log(e.target);
+            getAction(e.target);
+        });
     });
 
     const renderSearchModal = (data) => {
 
-        console.log(data);
         const searchResultList = document.querySelector("#searchResultList");
         const itemHover = 'hover:bg-blue-600 hover:text-white p-[10px] flex';
-        const itemAnchorClass = 'getActionBtn inline-block w-[100%]';
+        const itemAnchorClass = 'searchItem inline-block w-[100%]';
         searchResultList.innerHTML = '';
         searchResultList.innerHTML = `${data.searchedNotebookList.map((notebook) => {
             return `
                 <li class="${itemHover}">
                     <i class="fa-solid fa-book p-[5px]"></i>
                     <a data-url="/books/${notebook.id}"
-                       th:class="${itemAnchorClass}">${notebook.name}</a>
+                       class="${itemAnchorClass}">${notebook.name}</a>
                 </li>
                 `
         }).join('')}
@@ -80,10 +85,16 @@
                 <li class="${itemHover}">
                     <i class="fa-solid fa-note-sticky p-[5px]"></i>
                     <a data-url="/books/${note.notebook.id}/notes/${note.id}"
-                       th:class="${itemAnchorClass}">${note.title}</a>
+                       class="${itemAnchorClass}">${note.title}</a>
                 </li>
                 `
         }).join('')}`
+        document.querySelectorAll(".searchItem").forEach((searchItem) => {
+            searchItem.addEventListener("click", (e) => {
+                console.log(e.target);
+                getAction(e.target);
+            });
+        });
     };
 </script>
 
@@ -108,17 +119,17 @@
 <dialog th:fragment="tagModal" id="tagModal" class="modal">
     <div class="modal-box h-[550px]">
         <h1>태그 목록</h1>
-        <ul class="h-[30%] border-2 overflow-auto flex flex-wrap gap-2">
+        <ul id="tagList" class="h-[30%] border-2 overflow-auto flex flex-wrap gap-2">
             <li th:each="tag : ${tagList}" class="w-[20%]">
-                <a th:data-url="@{|/tags/${tag.id}/notes|}" th:text="${tag.name}"
+                <a th:data-tag-id="${tag.id}" th:text="${tag.name}"
                    class="tagItem p-[15px] h-[100%] w-[100%] inline-block text-[1.2rem]
                    text-center hover:bg-blue-600 hover:text-white"
                    th:classappend="${targetTag != null and targetTag.id == tag.id} ? 'bg-blue-600' : ''"
-                    th:data-notebook-id="${targetNotebook.id}" th:data-note-id="${targetNote.id}"></a>
+                   th:data-notebook-id="${targetNotebook.id}" th:data-note-id="${targetNote.id}"></a>
             </li>
         </ul>
-        <ul class="h-[50%] border-2 overflow-auto"
-            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='getActionBtn inline-block w-[100%]'">
+        <ul id="tagNoteList" class="h-[50%] border-2 overflow-auto"
+            th:with="itemHover='hover:bg-blue-600 hover:text-white p-[10px] flex', itemAnchorClass='tagNote inline-block w-[100%]'">
             <li th:each="note : ${noteListByTag}" th:class="${itemHover}">
                 <a th:data-url="@{|/books/${note.notebook.id}/notes/${note.id}|}" th:text="${note.title}"
                    th:class="${itemAnchorClass}"></a>
@@ -133,13 +144,64 @@
     </div>
 </dialog>
 <script th:fragment="tagModalJs">
-    document.querySelectorAll(".tagItem").forEach((tagItem) => {
-        tagItem.addEventListener("click", (e) => {
-            getAction(e.target, (params) => {
-                params.notebookId = e.target.dataset.notebookId;
-                params.noteId = e.target.dataset.noteId;
-                params.isTagModal = true;
-            });
+    document.querySelectorAll("#tagList a").forEach((item) => {
+        item.addEventListener("click", async (e) => {
+            const tagId = e.target.dataset.tagId;
+            const data = await getFetch(`/tags/api`);
+            renderTagList(tagId, data);
+            // renderTagNoteList(tagId, data);
         });
     });
+    const renderTagList = (targetTagId, data) => {
+        const tagList = document.querySelector("#tagList");
+        const itemClass = "tagItem p-[15px] h-[100%] w-[100%] inline-block text-[1.2rem] text-center hover:bg-blue-600 hover:text-white";
+        const selectedClass = itemClass + " bg-blue-600";
+
+        tagList.innerHTML = '';
+        tagList.innerHTML = `${data.map((tag) => {
+            return `
+                <li class="w-[20%]">
+                    <a data-tag-id=${tag.id} class="${targetTagId == tag.id ? selectedClass : itemClass}">${tag.name}</a>
+                </li>
+            `
+        }).join('')}`;
+        document.querySelectorAll("#tagList a").forEach((item) => {
+            item.addEventListener("click", async (e) => {
+                const tagId = e.target.dataset.tagId;
+                const data2 = await getFetch(`/tags/api`);
+                const data = await getFetch(`/tags/${tagId}/notes/api`);
+                renderTagList(tagId, data2);
+                renderTagNoteList(data);
+            });
+        });
+    }
+    const renderTagNoteList = (data) => {
+        const tagNoteList = document.querySelector("#tagNoteList");
+        const itemHover = "hover:bg-blue-600 hover:text-white p-[10px] flex";
+        const itemAnchorClass = "tagNote inline-block w-[100%]";
+
+        tagNoteList.innerHTML = '';
+        tagNoteList.innerHTML = `${data.map((note) => {
+            return `
+                <li class="${itemHover}">
+                    <a data-url="/books/${note.notebook.id}/notes/${note.id}"
+                       class="${itemAnchorClass}">${note.title}</a>
+                </li>
+                `
+        }).join('')}
+        `;
+        document.querySelectorAll("#tagNoteList a").forEach((item) => {
+            item.addEventListener("click", (e) => {
+                getAction(e.target);
+            });
+        });
+    }
+
+    // getAction(e.target, (params) => {
+    //     params.notebookId = e.target.dataset.notebookId;
+    //     params.noteId = e.target.dataset.noteId;
+    //     params.isTagModal = true;
+    // });
+
+
 </script>
