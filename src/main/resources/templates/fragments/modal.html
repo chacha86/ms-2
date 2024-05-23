@@ -56,11 +56,20 @@
 
 <script th:fragment="searchModalJs">
     document.querySelector(".searchBtn").addEventListener("click", (e) => {
-        postAction(e.target, (params) => {
-            const keyword = document.querySelector(".search-input").value;
-            params.isSearchModal = true;
-            params.keyword = keyword;
-        });
+        e.preventDefault();
+        console.log("click search btn");
+        //1. data를 받아와야 함. => fetch
+        const url = "/api/search";
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("받은 데이터 : ");
+                console.log(data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+        //2. 받아온 데이터를 이용해 필요한 부분의 화면 수정
     });
 </script>
 

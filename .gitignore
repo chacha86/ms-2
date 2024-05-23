@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### front ###
+/nextjs/.next/
+/nextjs/node_modules/
+/nextjs/out/

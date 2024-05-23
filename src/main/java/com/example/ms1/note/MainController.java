@@ -31,4 +31,10 @@ public class MainController {
     public String test(String fruits) {
         return fruits;
     }
+
+    @GetMapping("/api/search")
+    @ResponseBody
+    public String search() {
+        return "{\"result\" : \"success\"}";
+    }
 }
