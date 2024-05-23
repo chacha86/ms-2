@@ -34,7 +34,7 @@ public class Note {
         noteDto.setTitle(this.title);
         noteDto.setContent(this.content);
         noteDto.setCreateDate(this.createDate);
-        noteDto.setNotebook(this.notebook);
+        noteDto.setNotebook(this.notebook.toDto());
         return noteDto;
     }
 }

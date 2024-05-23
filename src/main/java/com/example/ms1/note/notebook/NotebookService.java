@@ -5,6 +5,7 @@ import com.example.ms1.note.note.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,5 +49,14 @@ public class NotebookService {
 
     public List<Notebook> getSearchedNotebookList(String keyword) {
         return notebookRepository.findByNameContaining(keyword);
+    }
+
+    public List<NotebookDto> convertToDtoList(List<Notebook> notebookList) {
+        List<NotebookDto> notebookDtoList = new ArrayList<>();
+        for(Notebook notebook : notebookList) {
+            notebookDtoList.add(notebook.toDto());
+        }
+
+        return notebookDtoList;
     }
 }

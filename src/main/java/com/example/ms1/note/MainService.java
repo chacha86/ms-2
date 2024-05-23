@@ -1,10 +1,12 @@
 package com.example.ms1.note;
 
 import com.example.ms1.note.note.Note;
+import com.example.ms1.note.note.NoteDto;
 import com.example.ms1.note.note.NoteService;
 import com.example.ms1.note.note.tag.tag.Tag;
 import com.example.ms1.note.note.tag.tag.TagService;
 import com.example.ms1.note.notebook.Notebook;
+import com.example.ms1.note.notebook.NotebookDto;
 import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
 import com.sun.tools.javac.Main;
@@ -34,11 +36,7 @@ public class MainService {
         List<Note> noteList = targetNotebook.getNoteList();
         Note targetNote = noteList.get(0);
 
-        List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
-        List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
-        SearchDataDto searchDataDto = new SearchDataDto(searchedNotebookList, searchedNoteList);
-
-
+        SearchDataDto searchDataDto = getSearchedData(keyword);
         List<Tag> tagList = tagService.getTagList();
 
         MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, searchDataDto, tagList);
@@ -140,8 +138,8 @@ public class MainService {
     }
 
     public SearchDataDto getSearchedData(String keyword) {
-        List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
-        List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
+        List<NotebookDto> searchedNotebookList = notebookService.convertToDtoList(notebookService.getSearchedNotebookList(keyword));
+        List<NoteDto> searchedNoteList = noteService.convertToDtoList(noteService.getSearchedNoteList(keyword));
         SearchDataDto searchDataDto = new SearchDataDto(searchedNotebookList, searchedNoteList);
         return searchDataDto;
     }

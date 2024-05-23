@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,5 +49,14 @@ public class NoteService {
 
     public List<Note> getSortedListByTitle(Notebook targetNotebook) {
         return noteRepository.findByNotebookOrderByTitle(targetNotebook);
+    }
+
+    public List<NoteDto> convertToDtoList(List<Note> noteList) {
+        List<NoteDto> noteDtoList = new ArrayList<>();
+        for(Note note : noteList) {
+            noteDtoList.add(note.toDto());
+        }
+
+        return noteDtoList;
     }
 }
