@@ -36,4 +36,11 @@ public class Notebook {
         note.setNotebook(this);
         noteList.add(note);
     }
+
+    public NotebookDto toDto() {
+        NotebookDto notebookDto = new NotebookDto();
+        notebookDto.setId(this.id);
+        notebookDto.setName(this.name);
+        return notebookDto;
+    }
 }

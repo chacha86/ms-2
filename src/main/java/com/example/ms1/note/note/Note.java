@@ -27,4 +27,14 @@ public class Note {
 
     @OneToMany(mappedBy = "note")
     private List<NoteTag> noteTagList = new ArrayList<>();
+
+    public NoteDto toDto() {
+        NoteDto noteDto = new NoteDto();
+        noteDto.setId(this.id);
+        noteDto.setTitle(this.title);
+        noteDto.setContent(this.content);
+        noteDto.setCreateDate(this.createDate);
+        noteDto.setNotebook(this.notebook);
+        return noteDto;
+    }
 }
