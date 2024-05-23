@@ -34,7 +34,10 @@ public class MainController {
 
     @GetMapping("/api/search")
     @ResponseBody
-    public String search() {
-        return "{\"result\" : \"success\"}";
+    public SearchDataDto search() {
+
+        SearchDataDto searchDataDto = mainService.getSearchedData("");
+        return searchDataDto;
+//        return "{\"result\" : \"success\"}";
     }
 }

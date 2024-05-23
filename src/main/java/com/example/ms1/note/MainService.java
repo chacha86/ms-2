@@ -36,9 +36,12 @@ public class MainService {
 
         List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
         List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
+        SearchDataDto searchDataDto = new SearchDataDto(searchedNotebookList, searchedNoteList);
+
+
         List<Tag> tagList = tagService.getTagList();
 
-        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, searchedNotebookList, searchedNoteList, tagList);
+        MainDataDto mainDataDto = new MainDataDto(notebookList, targetNotebook, noteList, targetNote, searchDataDto, tagList);
         return mainDataDto;
     }
 
@@ -134,5 +137,12 @@ public class MainService {
         }
         // 노트북 삭제
         notebookService.delete(notebook.getId());
+    }
+
+    public SearchDataDto getSearchedData(String keyword) {
+        List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
+        List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
+        SearchDataDto searchDataDto = new SearchDataDto(searchedNotebookList, searchedNoteList);
+        return searchDataDto;
     }
 }
