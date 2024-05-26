@@ -1,5 +1,7 @@
 package com.example.ms1.note.notebook;
 
+import com.example.ms1.api.note.BookTreeDto;
+import com.example.ms1.api.note.notebook.NotebookDto;
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteService;
 import lombok.RequiredArgsConstructor;
@@ -49,4 +51,36 @@ public class NotebookService {
     public List<Notebook> getSearchedNotebookList(String keyword) {
         return notebookRepository.findByNameContaining(keyword);
     }
+
+    public List<NotebookDto> convertToDtoList(List<Notebook> notebookList) {
+        return notebookList.stream().map((notebook) -> {
+            NotebookDto notebookDto = new NotebookDto();
+            notebookDto.setId(notebook.getId());
+            notebookDto.setTitle(notebook.getName());
+            return notebookDto;
+        }).toList();
+    }
+
+    public List<NotebookDto> getNotebookDtoList(NotebookDto parent) {
+        List<Notebook> notebookList = notebookRepository.findByParentId(parent.getId());
+        return convertToDtoList(notebookList);
+    }
+
+    public NotebookDto buildChildTree(NotebookDto parent) {
+
+        List<NotebookDto> childList = getNotebookDtoList(parent).stream().map((notebookDto -> {
+            return buildChildTree(notebookDto);
+        })).toList();
+
+        parent.setChildren(childList);
+        return parent;
+    }
+
+    public List<NotebookDto> buildTree() {
+        List<NotebookDto> topNotebookList = convertToDtoList(getTopNotebookList());
+        return topNotebookList.stream().map((notebookDto) -> {
+            return buildChildTree(notebookDto);
+        }).toList();
+    }
+
 }
