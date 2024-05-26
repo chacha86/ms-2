@@ -1,10 +1,20 @@
-'use client';
-import {useEffect} from "react";
+"use client";
+import React, {useEffect, useState} from "react";
 import MyEditor from "./myEditor";
-export default function Home() {
-    useEffect(() => {
+import {NoteBookList} from "./Notebook";
 
+export default function Home() {
+    const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
+    const [targetNote, setTargetNote] = useState(null);
+
+    function onClickItem(e: React.MouseEvent<HTMLAnchorElement>) {
+        console.log(e.currentTarget.dataset.id);
+        setTargetNotebookId(Number(e.currentTarget.dataset.id));
+    }
+
+    useEffect(() => {
     }, []);
+
     return (
         <>
             <div className="bg-blue-300">
@@ -12,24 +22,27 @@ export default function Home() {
             </div>
             <div className="flex">
                 <div className="bg-indigo-300 w-[20%]">
-                    <ul className="menu h-[100%] overflow-scroll">
-                        <li>aaa</li>
-                        <li>aaa</li>
-                        <li>aaa</li>
-                    </ul>
-
+                    <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickItem}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn btn"/>
                     </form>
 
                     <form method="post">
-                        <input type="submit" value="하위 노트북 추가" className="postActionBtn btn"/>
+                        <input
+                            type="submit"
+                            value="하위 노트북 추가"
+                            className="postActionBtn btn"
+                        />
                     </form>
                     <form method="post">
                         <input type="submit" value="삭제" className="postActionBtn btn"/>
                     </form>
-                    <a href="/signup" className="btn">회원 가입</a>
-                    <a href="/logout" className="btn">로그아웃</a>
+                    <a href="/signup" className="btn">
+                        회원 가입
+                    </a>
+                    <a href="/logout" className="btn">
+                        로그아웃
+                    </a>
 
                     <button className="btn">노트 이동</button>
                     <button className="btn">검색</button>
@@ -59,7 +72,7 @@ export default function Home() {
                             <input type="text" name="title"/>
                         </div>
                         <input type="hidden" name="content" id="editor-body"/>
-                        <MyEditor />
+                        <MyEditor/>
                         <div>
                             <input type="button" value="수정" className="postActionBtn"/>
                         </div>
@@ -75,7 +88,12 @@ export default function Home() {
                         </li>
                     </ul>
                     <form>
-                        <input type="text" name="name" className="input input-bordered" placeholder="태그 추가"/>
+                        <input
+                            type="text"
+                            name="name"
+                            className="input input-bordered"
+                            placeholder="태그 추가"
+                        />
                         <input type="submit" className="postActionBtn btn" value="추가"/>
                     </form>
                 </div>
