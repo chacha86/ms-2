@@ -2,15 +2,19 @@
 import React, {useEffect, useState} from "react";
 import MyEditor from "./myEditor";
 import {NoteBookList} from "./Notebook";
-import {test} from "../global/UI";
+import {NoteList} from "@/app/Note";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
-    const [targetNote, setTargetNote] = useState(null);
+    const [targetNoteId, setTargetNoteId] = useState<number>(0);
 
-    function onClickItem(e: React.MouseEvent<HTMLAnchorElement>) {
-        console.log(e.currentTarget.dataset.id);
+    function onClickBookItem(e: React.MouseEvent<HTMLSpanElement>) {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
+    }
+
+    function onClickNoteItem(e: React.MouseEvent<HTMLSpanElement>) {
+        console.log("note id: ", e.currentTarget.dataset.id);
+        setTargetNoteId(Number(e.currentTarget.dataset.id));
     }
 
     useEffect(() => {
@@ -23,7 +27,7 @@ export default function Home() {
             </div>
             <div className="flex">
                 <div className="bg-indigo-300 w-[20%]">
-                    <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickItem}/>
+                    <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn btn"/>
                     </form>
@@ -51,12 +55,7 @@ export default function Home() {
                     <button className="btn">태그 목록</button>
                 </div>
                 <div className="bg-red-300 w-[20%] h-[800px] text-center ">
-                    <ul className="h-[100%] overflow-scroll">
-                        <li>
-                            <a className="getActionBtn">aaa</a>
-                        </li>
-                    </ul>
-
+                    <NoteList bookId={targetNotebookId} onClickItem={onClickNoteItem} target={targetNoteId}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn"/>
                     </form>
