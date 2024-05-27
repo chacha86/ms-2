@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from "react";
 import MyEditor from "./myEditor";
 import {NoteBookList} from "./Notebook";
+import {test} from "../global/UI";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
