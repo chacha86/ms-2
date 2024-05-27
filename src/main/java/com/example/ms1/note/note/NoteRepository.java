@@ -13,4 +13,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findByNotebookOrderByCreateDateDesc(Notebook targetNotebook);
 
     List<Note> findByNotebookOrderByTitle(Notebook targetNotebook);
+
+    List<Note> findByNotebookId(Long targetNotebook);
 }

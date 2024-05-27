@@ -3,6 +3,7 @@ async function get(url: string, params: Record<string, string>){
     const queryString = new URLSearchParams(params).toString();
     const urlWithParams = `${baseUrl}${url}?${queryString}`;
 
+    console.log(urlWithParams);
     return await fetch(urlWithParams)
         .then((response) => response.json())
         .then((data) => data)

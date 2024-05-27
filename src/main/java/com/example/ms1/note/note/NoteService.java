@@ -1,7 +1,8 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.api.note.note.NoteDto;
+import com.example.ms1.api.note.notebook.NotebookDto;
 import com.example.ms1.note.notebook.Notebook;
-import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,8 @@ public class NoteService {
         return noteRepository.findById(id).orElseThrow();
     }
 
-    public List<Note> getNoteListByNotebook(Notebook targetNotebook) {
-        return noteRepository.findByNotebook(targetNotebook);
+    public List<Note> getNoteListByNotebook(Long targetNotebookId) {
+        return noteRepository.findByNotebookId(targetNotebookId);
     }
 
     public void save(Note note) {
@@ -48,5 +49,15 @@ public class NoteService {
 
     public List<Note> getSortedListByTitle(Notebook targetNotebook) {
         return noteRepository.findByNotebookOrderByTitle(targetNotebook);
+    }
+
+    public List<NoteDto> convertToDtoList(List<Note> noteList) {
+        return noteList.stream().map((note) -> {
+            NoteDto noteDto = new NoteDto();
+            noteDto.setId(note.getId());
+            noteDto.setTitle(note.getTitle());
+            noteDto.setContent(note.getContent());
+            return noteDto;
+        }).toList();
     }
 }

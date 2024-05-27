@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {get} from "@/global/fetchApi";
-import {test} from "@/global/UI";
 
 interface NotebookDto {
     id: number;
@@ -11,7 +10,7 @@ interface NotebookDto {
 interface NoteBookListProps {
     children?: NotebookDto[] | null;
     target: number;
-    onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void;
 }
 
 export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
@@ -27,7 +26,6 @@ export function NoteBookList({children, target, onClickItem}: NoteBookListProps)
         async function getNotebookList() {
             const data = await get("/books", {});
             setNotebookList(data);
-            test();
             if (target === 0) {
                 target = data[0].id;
             }
@@ -40,8 +38,8 @@ export function NoteBookList({children, target, onClickItem}: NoteBookListProps)
         <ul className="menu menu-dropdown p-0">
             {notebookList && notebookList.map((notebook: NotebookDto) => (
                 notebook.children.length === 0 ?
-                    <BookItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem}/> :
-                    <GroupItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem}/>
+                    <BookItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem} /> :
+                    <GroupItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem} />
             ))}
         </ul>
     );
@@ -65,28 +63,37 @@ function BookItem({notebook, target, onClickItem}: {
 function GroupItem({notebook, target, onClickItem}: {
     notebook: NotebookDto,
     target: number,
-    onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void,
 }) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleToggle = (e: React.MouseEvent<HTMLSpanElement>) => {
+        e.stopPropagation();
+
+        const selectedItem = e.currentTarget.parentNode as HTMLElement;
+        selectedItem?.classList.toggle('menu-dropdown-show');
+        selectedItem.nextElementSibling?.classList.toggle('menu-dropdown-show');
+
+        setIsOpen(!isOpen);
+    }
+
+    useEffect(() => {
+        setIsOpen(isOpen);
+    }, [isOpen]);
+
     let itemClass = "menu-dropdown-toggle relative";
+    itemClass += isOpen ? ' menu-dropdown-show' : '';
     itemClass += notebook.id == target ? ' bg-blue-600 text-white' : '';
     let filterClass = "filter border-2 absolute w-[15px] h-[50%] p-[12px] right-[0.3rem] cursor-copy";
     filterClass += notebook.id == target ? ' bg-indigo-300' : '';
 
     return (
         <li>
-            {/*<details>*/}
-            {/*    <summary>*/}
-            <span className={itemClass} data-id={notebook.id}
-                  onClick={onClickItem}>{notebook.title}<span
-                className={filterClass}></span></span>
+            <span className={itemClass} data-id={notebook.id} onClick={onClickItem}>
+                {notebook.title} <span className={filterClass} onClick={handleToggle}></span>
+            </span>
             <NoteBookList target={target} children={notebook.children} onClickItem={onClickItem}/>
-            {/*<ul className="menu-dropdown">*/}
-            {/*    <li><a>Submenu 1</a></li>*/}
-            {/*    <li><a>Submenu 2</a></li>*/}
-            {/*</ul>*/}
-            {/*<a className={notebook.id == target ? 'bg-blue-600' : ''} data-id={notebook.id} onClick={onClickItem}>{notebook.title}</a>*/}
-            {/*</summary>*/}
-            {/*</details>*/}
         </li>
     );
 }
