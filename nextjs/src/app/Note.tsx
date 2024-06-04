@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {get} from "@/global/fetchApi";
 
 interface NoteDto {
@@ -7,7 +7,8 @@ interface NoteDto {
     content: string;
 }
 
-export function NoteList({bookId, target, onClickItem}: { bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
+export const NoteList = React.memo(({ bookId, target, onClickItem }:{ bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) => {
+// export function NoteList({bookId, target, onClickItem}: { bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
     const [noteList, setNoteList] = useState<NoteDto[] | null>(null);
 
     useEffect(() => {
@@ -32,4 +33,4 @@ export function NoteList({bookId, target, onClickItem}: { bookId: number, target
             ))}
         </ul>
     );
-}
+});

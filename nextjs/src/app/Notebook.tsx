@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {get} from "@/global/fetchApi";
 
 interface NotebookDto {
@@ -13,8 +13,10 @@ interface NoteBookListProps {
     onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void;
 }
 
-export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
+const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target, onClickItem }) => {
+// export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
     const [notebookList, setNotebookList] = useState<NotebookDto[] | null>(null);
+    const [isLoding, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -34,6 +36,7 @@ export function NoteBookList({children, target, onClickItem}: NoteBookListProps)
         getNotebookList();
     }, []);
 
+
     return (
         <ul className="menu menu-dropdown p-0">
             {notebookList && notebookList.map((notebook: NotebookDto) => (
@@ -43,7 +46,7 @@ export function NoteBookList({children, target, onClickItem}: NoteBookListProps)
             ))}
         </ul>
     );
-}
+});
 
 function BookItem({notebook, target, onClickItem}: {
     notebook: NotebookDto,
@@ -97,3 +100,4 @@ function GroupItem({notebook, target, onClickItem}: {
         </li>
     );
 }
+export {NoteBookList};
