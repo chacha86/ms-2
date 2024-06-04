@@ -1,30 +1,43 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import MyEditor from "./myEditor";
-import {NoteBookList} from "./Notebook";
 import {NoteList} from "@/app/Note";
+import {NoteBookList} from "@/app/Notebook";
+import {get} from "@/global/fetchApi";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
     const [targetNoteId, setTargetNoteId] = useState<number>(0);
+    const [isLoding, setIsLoading] = useState<boolean>(true);
 
-    function onClickBookItem(e: React.MouseEvent<HTMLSpanElement>) {
+    const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
-    }
+    }, []);
+    // function onClickBookItem(e: React.MouseEvent<HTMLSpanElement>) {
+    //     setTargetNotebookId(Number(e.currentTarget.dataset.id));
+    // }
 
-    function onClickNoteItem(e: React.MouseEvent<HTMLSpanElement>) {
+    const onClickNoteItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
-    }
+    }, []);
+    // function onClickNoteItem(e: React.MouseEvent<HTMLSpanElement>) {
+    //     console.log("note id: ", e.currentTarget.dataset.id);
+    //     setTargetNoteId(Number(e.currentTarget.dataset.id));
+    // }
 
     useEffect(() => {
+        async function getAuth() {
+            const data = await get("/auth/check", {});
+            if (data.result === "success")
+                setIsLoading(false);
+        }
+        getAuth();
     }, []);
 
     return (
         <>
-            <div className="bg-blue-300">
-                <a href="/">logo</a>
-            </div>
+
             <div className="flex">
                 <div className="bg-indigo-300 w-[20%]">
                     <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>

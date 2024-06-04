@@ -39,3 +39,5 @@ out/
 ### front-end ###
 /nextjs/node_modules/
 /nextjs/.next/
+/.next/
+/node_modules/

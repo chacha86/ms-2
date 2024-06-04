@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "daisyui": "^4.11.1"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^7.0.0"
   }
 }
