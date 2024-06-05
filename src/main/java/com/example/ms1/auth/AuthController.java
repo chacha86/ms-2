@@ -1,9 +1,13 @@
 package com.example.ms1.auth;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @RestController
@@ -11,11 +15,43 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
+    private final JwtUtil jwtUtil;
+
+    @PostMapping("/login")
+    public String login(@RequestBody Map<String, Object> requestParam, HttpServletResponse res) {
+
+        if(Boolean.valueOf((String)requestParam.get("flag")) == true) {
+            String token = jwtUtil.createToken("chacha");
+            Cookie cookie = new Cookie("accessToken", token);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60 * 60 * 24);
+            cookie.setPath("/");
+            res.addCookie(cookie);
+
+            return "{\"result\" : \"success\", \"token\" : \"" + token + "\"}";
+        }
+        else
+            return "{\"result\" : \"fail\"}";
+    }
+
     @GetMapping("/check")
     public String check(@RequestParam Boolean flag) {
         if(flag)
             return "{\"result\" : \"success\"}";
         else
             return "{\"result\" : \"fail\"}";
+    }
+
+    @GetMapping("/success")
+    public ResultData login(String id, String password) {
+        System.out.println("success");
+        return new ResultData("S-200", "로그인 성공", null);
+
+    }
+
+    @GetMapping("/fail")
+    public ResultData fail() {
+        System.out.println("fail");
+        return new ResultData("F-401", "로그인 실패", null);
     }
 }

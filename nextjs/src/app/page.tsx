@@ -8,7 +8,6 @@ import {get} from "@/global/fetchApi";
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
     const [targetNoteId, setTargetNoteId] = useState<number>(0);
-    const [isLoding, setIsLoading] = useState<boolean>(true);
 
     const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
@@ -26,16 +25,7 @@ export default function Home() {
     //     setTargetNoteId(Number(e.currentTarget.dataset.id));
     // }
 
-    useEffect(() => {
-        async function getAuth() {
-            const data = await get("/auth/check", {});
-            if (data.result === "success")
-                setIsLoading(false);
-        }
-        getAuth();
-    }, []);
-
-    return (
+     return (
         <>
 
             <div className="flex">
