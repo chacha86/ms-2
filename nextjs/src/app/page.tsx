@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import MyEditor from "./myEditor";
 import {NoteList} from "@/app/Note";
 import {NoteBookList} from "@/app/Notebook";
-import {get} from "@/global/fetchApi";
+import Header from "@/app/Header";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
@@ -12,22 +12,14 @@ export default function Home() {
     const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
     }, []);
-    // function onClickBookItem(e: React.MouseEvent<HTMLSpanElement>) {
-    //     setTargetNotebookId(Number(e.currentTarget.dataset.id));
-    // }
 
     const onClickNoteItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
     }, []);
-    // function onClickNoteItem(e: React.MouseEvent<HTMLSpanElement>) {
-    //     console.log("note id: ", e.currentTarget.dataset.id);
-    //     setTargetNoteId(Number(e.currentTarget.dataset.id));
-    // }
-
-     return (
+      return (
         <>
-
+            <Header/>
             <div className="flex">
                 <div className="bg-indigo-300 w-[20%]">
                     <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
