@@ -26,10 +26,13 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
         }
 
         async function getNotebookList() {
-            const data = await get("/books", {});
-            setNotebookList(data);
+            const result = await get("/books", {});
+            if(result.data === "fail") {
+                return;
+            }
+            setNotebookList(result.data);
             if (target === 0) {
-                target = data[0].id;
+                target = result.data[0].id;
             }
         }
 

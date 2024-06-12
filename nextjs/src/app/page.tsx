@@ -4,6 +4,7 @@ import MyEditor from "./myEditor";
 import {NoteList} from "@/app/Note";
 import {NoteBookList} from "@/app/Notebook";
 import Header from "@/app/Header";
+import Detail from "@/app/Detail";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
@@ -59,38 +60,7 @@ export default function Home() {
                     <a className="btn sortTitle">이름순</a>
                 </div>
                 <div className="w-[60%]">
-                    <form method="post" id="updateForm">
-                        <div>
-                            <input type="hidden" name="id"/>
-                        </div>
-                        <div>
-                            <input type="text" name="title"/>
-                        </div>
-                        <input type="hidden" name="content" id="editor-body"/>
-                        <MyEditor/>
-                        <div>
-                            <input type="button" value="수정" className="postActionBtn"/>
-                        </div>
-                    </form>
-                    <form id="deleteForm">
-                        <input type="button" value="삭제" className="postActionBtn"/>
-                    </form>
-                    <ul className="flex gap-5">
-                        <li>
-                            <form>
-                                <input type="submit" className="btn"/>
-                            </form>
-                        </li>
-                    </ul>
-                    <form>
-                        <input
-                            type="text"
-                            name="name"
-                            className="input input-bordered"
-                            placeholder="태그 추가"
-                        />
-                        <input type="submit" className="postActionBtn btn" value="추가"/>
-                    </form>
+                    <Detail />
                 </div>
             </div>
         </>
