@@ -15,7 +15,10 @@ export const NoteList = React.memo(({ bookId, target, onClickItem }:{ bookId: nu
         async function getNoteList() {
             console.log("bookId: ", bookId);
             const data = await get("/notes", {bookId: String(bookId)});
-            setNoteList(data);
+            if(data.data === "fail") {
+                return;
+            }
+            setNoteList(data.data);
         }
 
         getNoteList();
