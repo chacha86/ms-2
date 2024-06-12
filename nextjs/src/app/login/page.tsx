@@ -1,9 +1,11 @@
 'use client'
 import React, { useState } from "react";
+import {useRouter} from "next/navigation";
 
 export default function Login() {
     const [loginId, setLoginId] = useState('');
     const [loginPw, setLoginPw] = useState('');
+    const router = useRouter();
 
     const onChangeLoginId = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLoginId(e.target.value);
@@ -33,6 +35,7 @@ export default function Login() {
             })
             .then((data) => {
                 console.log(data);
+                router.push("/");
             })
             .catch((err) => {
                 console.error(err);

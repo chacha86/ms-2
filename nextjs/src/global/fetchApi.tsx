@@ -4,7 +4,9 @@ async function get(url: string, params: Record<string, string>){
     const urlWithParams = `${baseUrl}${url}?${queryString}`;
 
     console.log(urlWithParams);
-    return await fetch(urlWithParams)
+    return await fetch(urlWithParams,
+        {credentials: 'include',}
+        )
         .then((response) => response.json())
         .then((data) => data)
         .catch((error) => console.error(error));
@@ -13,6 +15,7 @@ async function get(url: string, params: Record<string, string>){
 async function post(url: string, params: Record<string, string>) {
     return await fetch(`${baseUrl}${url}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },

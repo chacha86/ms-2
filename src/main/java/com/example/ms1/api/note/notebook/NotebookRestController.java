@@ -18,7 +18,6 @@ public class NotebookRestController {
 
     @GetMapping
     public List<NotebookDto> books() {
-        System.out.println("hihi");
         List<NotebookDto> tree = notebookService.buildTree();
         return tree;
     }
