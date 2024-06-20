@@ -30,9 +30,9 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
             if(result.data === "fail") {
                 return;
             }
-            setNotebookList(result.data);
+            setNotebookList(result);
             if (target === 0) {
-                target = result.data[0].id;
+                target = result[0].id;
             }
         }
 

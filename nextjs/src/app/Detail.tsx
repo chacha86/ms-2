@@ -3,15 +3,21 @@ import React, {useEffect, useState} from "react";
 import Loading from "@/global/Loading";
 
 export default function Detail() {
+    const [isEditorLoading, setIsEditorLoading] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const checkEditorLoading = () => {
-        setIsLoading(false);
+        console.log("checkEditorLoading");
+        setIsEditorLoading(false);
     }
 
     useEffect(() => {
+        setIsLoading(false);
+    }, [isEditorLoading]);
 
-    }, []);
+    if (isLoading) {
+        return <Loading/>
+    }
 
     return (
         <>

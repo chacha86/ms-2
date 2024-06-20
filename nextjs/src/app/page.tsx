@@ -5,10 +5,13 @@ import {NoteList} from "@/app/Note";
 import {NoteBookList} from "@/app/Notebook";
 import Header from "@/app/Header";
 import Detail from "@/app/Detail";
+import Link from "next/link";
+import errorStore from "@/app/errorStore";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
     const [targetNoteId, setTargetNoteId] = useState<number>(0);
+    const error = errorStore((error) => error.error);
 
     const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
@@ -18,12 +21,16 @@ export default function Home() {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
     }, []);
-      return (
+
+    return (
         <>
             <Header/>
             <div className="flex">
                 <div className="bg-indigo-300 w-[20%]">
-                    <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
+                    <div className="h-[70%]">
+                        <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
+                    </div>
+                    <Link href="/zustest">zustand</Link>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn btn"/>
                     </form>
@@ -60,7 +67,7 @@ export default function Home() {
                     <a className="btn sortTitle">이름순</a>
                 </div>
                 <div className="w-[60%]">
-                    <Detail />
+                    <Detail/>
                 </div>
             </div>
         </>
