@@ -8,22 +8,19 @@ export default function MyEditor({checkEditorLoading}: { checkEditorLoading: () 
     const [editorRef, setEditorRef] = useState<any>(null);
     const Editor = dynamic(
         () => import('@toast-ui/react-editor').then(mod => mod.Editor),
-        { ssr: false }  // 이 옵션은 서버 사이드 렌더링을 비활성화합니다.
+        {ssr: false}  // 이 옵션은 서버 사이드 렌더링을 비활성화합니다.
     );
 
-    useEffect(() => {
-        console.log("editorRef: ", editorRef);
-        checkEditorLoading();
-    }, [editorRef]);
-
     return (
-        <Editor
-            ref={editorRef}
-            initialValue="hello react editor world!"
-            previewStyle="vertical"
-            height="600px"
-            initialEditType="markdown"
-            useCommandShortcut={true}
-        />
+        <div>
+            <Editor
+                onLoad={checkEditorLoading}
+                initialValue="hello react editor world!"
+                previewStyle="vertical"
+                height="600px"
+                initialEditType="markdown"
+                useCommandShortcut={true}
+            />
+        </div>
     );
 }

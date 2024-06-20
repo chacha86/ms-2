@@ -1,6 +1,7 @@
 'use client'
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
+import MyErrorBoundary from "@/app/login/MyErrorBoundary";
 
 export default function Login() {
     const [loginId, setLoginId] = useState('');
@@ -22,12 +23,13 @@ export default function Login() {
             },
             credentials: 'include',
             body: JSON.stringify({
-                "flag" : "true",
+                "flag": "true",
                 "loginId": loginId,
                 "loginPw": loginPw
             })
         })
             .then((res) => {
+                console.log(123123123);
                 if (!res.ok) {
                     throw new Error("error");
                 }
@@ -38,21 +40,28 @@ export default function Login() {
                 router.push("/");
             })
             .catch((err) => {
+                console.log("sdfwsdfsdfsdf");
                 console.error(err);
+                throw new Error("error");
             })
-
     }
 
+    // throw new Error("xcvxcv");
+
     return (
-        <div className="flex flex-col gap-10 w-[40%] mx-auto mt-[200px]">
-            <div>
-                <h1 className="font-bold text-[1.5rem] text-center">Login</h1>
+        <MyErrorBoundary fallback={"hihi"}>
+            <div className="flex flex-col gap-10 w-[40%] mx-auto mt-[200px]">
+                <div>
+                    <h1 className="font-bold text-[1.5rem] text-center">Login</h1>
+                </div>
+                <div className="flex flex-col gap-3">
+                    <input type="text" name="loginId" className="input input-bordered" placeholder="아이디" value={loginId}
+                           onChange={onChangeLoginId}/>
+                    <input type="password" name="loginPw" className="input input-bordered" placeholder="비밀번호"
+                           value={loginPw} onChange={onChangeLoginPw}/>
+                    <button className="btn btn-primary" onClick={onClickLoginButton}>로그인</button>
+                </div>
             </div>
-            <div className="flex flex-col gap-3">
-                <input type="text" name="loginId" className="input input-bordered" placeholder="아이디" value={loginId} onChange={onChangeLoginId}/>
-                <input type="password" name="loginPw" className="input input-bordered" placeholder="비밀번호" value={loginPw} onChange={onChangeLoginPw} />
-                <button className="btn btn-primary" onClick={onClickLoginButton}>로그인</button>
-            </div>
-        </div>
+        </MyErrorBoundary>
     );
 }

@@ -9,14 +9,11 @@ export default function Error({
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    const router = useRouter()
-    const test = () => {
-        router.push("/login")
-    }
+
     return (
         <div>
-            <h2>Something went wrong!</h2>
-            <button onClick={() => test()}>Try again</button>
+            <h2>Something went wrong11111!</h2>
+            <button>Try again</button>
         </div>
     )
 }

@@ -20,18 +20,20 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody Map<String, Object> requestParam, HttpServletResponse res) {
+        System.out.println("hohhohoh");
+        throw new RuntimeException("인위적 에러 발생");
 
-        if (Boolean.valueOf((String) requestParam.get("flag")) == true) {
-            String token = jwtUtil.createToken("chacha");
-            Cookie cookie = new Cookie("accessToken", token);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(60 * 60 * 24);
-            cookie.setPath("/");
-            res.addCookie(cookie);
-
-            return "{\"result\" : \"success\", \"token\" : \"" + token + "\"}";
-        } else
-            return "{\"result\" : \"fail\"}";
+//        if (Boolean.valueOf((String) requestParam.get("flag")) == true) {
+//            String token = jwtUtil.createToken("chacha");
+//            Cookie cookie = new Cookie("accessToken", token);
+//            cookie.setHttpOnly(true);
+//            cookie.setMaxAge(60 * 60 * 24);
+//            cookie.setPath("/");
+//            res.addCookie(cookie);
+//
+//            return "{\"result\" : \"success\", \"token\" : \"" + token + "\"}";
+//        } else
+//            return "{\"result\" : \"fail\"}";
     }
 
     @PostMapping("/logout")
