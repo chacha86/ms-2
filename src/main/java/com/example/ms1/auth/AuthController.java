@@ -19,33 +19,18 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/refresh-access-token")
-    public String refreshAccessToken(HttpServletResponse res) {
-        String refreshToken = jwtUtil.createToken("chacha", JwtUtil.TokenType.REFRESH);
-        String username = jwtUtil.getUsername(refreshToken, JwtUtil.TokenType.REFRESH);
-        String token = jwtUtil.createToken(username, JwtUtil.TokenType.ACCESS);
-
-        Cookie cookie = new Cookie("accessToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(60 * 60 * 24);
-        cookie.setPath("/");
-        res.addCookie(cookie);
-
-        return "{\"result\" : \"success\", \"token\" : \"" + token + "\", \"refreshToken\" : \"" + refreshToken + "\"}";
-    }
-
     @PostMapping("/login")
     public String login(@RequestBody Map<String, Object> requestParam, HttpServletResponse res) {
         System.out.println("hohhohoh");
         if (Boolean.valueOf((String) requestParam.get("flag")) == true) {
-            String token = jwtUtil.createToken("chacha", JwtUtil.TokenType.ACCESS);
+            String token = jwtUtil.getAccessToken("chacha");
             Cookie cookie = new Cookie("accessToken", token);
             cookie.setHttpOnly(true);
             cookie.setMaxAge(60 * 60 * 24);
             cookie.setPath("/");
             res.addCookie(cookie);
 
-            String refreshToken = jwtUtil.createToken("chacha", JwtUtil.TokenType.REFRESH);
+            String refreshToken = jwtUtil.getRefreshToken("chacha");
             Cookie cookie2 = new Cookie("refreshToken", refreshToken);
             cookie2.setHttpOnly(true);
             cookie2.setPath("/");
