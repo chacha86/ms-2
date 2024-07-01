@@ -13,6 +13,7 @@ export default function Detail() {
 
     useEffect(() => {
         setIsLoading(false);
+        return
     }, [isEditorLoading]);
 
     if (isLoading) {
@@ -30,13 +31,22 @@ export default function Detail() {
                 </div>
                 <input type="hidden" name="content" id="editor-body"/>
                 <MyEditor checkEditorLoading={checkEditorLoading}/>
-                <div>
-                    <input type="button" value="수정" className="postActionBtn"/>
-                </div>
             </form>
-            <form id="deleteForm">
+        </>
+    )
+}
+
+const EditorAfter = () => {
+
+    return (
+        <div>
+            <div>
+                <input type="button" value="수정" className="postActionBtn"/>
+            </div>
+            <div>
                 <input type="button" value="삭제" className="postActionBtn"/>
-            </form>
+            </div>
+
             <ul className="flex gap-5">
                 <li>
                     <form>
@@ -53,6 +63,6 @@ export default function Detail() {
                 />
                 <input type="submit" className="postActionBtn btn" value="추가"/>
             </form>
-        </>
-    )
+        </div>
+    );
 }

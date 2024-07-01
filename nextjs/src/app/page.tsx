@@ -7,11 +7,14 @@ import Header from "@/app/Header";
 import Detail from "@/app/Detail";
 import Link from "next/link";
 import errorStore from "@/app/errorStore";
+import {loginUserStore} from "@/app/login/loginUserStore";
+import {useRouter} from "next/navigation";
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
     const [targetNoteId, setTargetNoteId] = useState<number>(0);
-    const error = errorStore((error) => error.error);
+    const [loginUser, setLoginUser] = loginUserStore((state) => [state.loginUser, state.setUser]);
+    const router = useRouter();
 
     const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
@@ -21,6 +24,11 @@ export default function Home() {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
     }, []);
+
+    if(loginUser === null) {
+        router.push("/login");
+        return;
+    }
 
     return (
         <>

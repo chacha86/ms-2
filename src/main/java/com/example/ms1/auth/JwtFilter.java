@@ -21,7 +21,9 @@ public class JwtFilter implements Filter {
             "/api/v1/auth/fail",
 //            "/api/v1/books",
 //            "/api/v1/notes",
-            "/api/v1/auth/login"
+            "/api/v1/auth/login",
+            "/test",
+            "/test2"
     );
 
 
@@ -48,7 +50,16 @@ public class JwtFilter implements Filter {
 
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("accessToken")) {
-                    Authentication authentication = new UsernamePasswordAuthenticationToken("user", null, new ArrayList<>());
+                    String token = cookie.getValue();
+                    JwtUtil jwtUtil = new JwtUtil();
+
+                    if (!jwtUtil.checkToken(token)) {
+                        System.out.println("토큰이 만료되었습니다.");
+                        httpResp.sendRedirect("/api/v1/auth/fail");
+                        return;
+                    }
+
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(jwtUtil.getUsername(token), null, new ArrayList<>());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     chain.doFilter(request, response);
                     return;
