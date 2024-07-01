@@ -15,7 +15,6 @@ export default function Login() {
     const [loginPw, setLoginPw] = useState('');
     const router = useRouter();
     const [loginResult, setLoginResult] = useState<number>(resultState.IDLE);
-    const loginUser = loginUserStore((state) => state.loginUser);
     const setLoginUser = loginUserStore((state) => state.setUser);
 
     const onChangeLoginId = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +47,7 @@ export default function Login() {
                 if(data.result === "success"){
                     setLoginResult(resultState.SUCCESS);
                     const testUser = {
-                        username: "testUser"
+                        username: "testUser11"
                     }
                     setLoginUser(testUser);
                     router.push('/');
