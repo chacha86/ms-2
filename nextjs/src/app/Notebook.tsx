@@ -22,15 +22,18 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
 
         if (children) {
             setNotebookList(children);
+            setIsLoading(false);
             return;
         }
 
         async function getNotebookList() {
             const result = await get("/books", {});
             if(result.data === "fail") {
+                throw new Error("fail to get notebook list");
                 return;
             }
             setNotebookList(result);
+            setIsLoading(false);
             if (target === 0) {
                 target = result[0].id;
             }
@@ -39,6 +42,9 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
         getNotebookList();
     }, []);
 
+    if(isLoding) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <ul className="menu menu-dropdown p-0">

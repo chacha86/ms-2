@@ -8,26 +8,36 @@ import Detail from "@/app/Detail";
 import Link from "next/link";
 import errorStore from "@/app/errorStore";
 import {loginUserStore} from "@/app/login/loginUserStore";
-import {useRouter} from "next/navigation";
+import { redirect } from 'next/navigation'
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
     const [targetNoteId, setTargetNoteId] = useState<number>(0);
-    const [loginUser, setLoginUser] = loginUserStore((state) => [state.loginUser, state.setUser]);
-    const router = useRouter();
+    const loginUser= loginUserStore((state) => state.loginUser);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
     }, []);
+
 
     const onClickNoteItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
     }, []);
 
-    if(loginUser === null) {
-        router.push("/login");
-        return;
+    console.log("loginUser: ", loginUser);
+
+    useEffect(() => {
+        console.log("dfsdf : " + loginUser);
+        if(loginUser === null) {
+            redirect('/login');
+        }
+        setIsLoading(false);
+    }, [loginUser]);
+
+    if(isLoading) {
+        return <div>loading...</div>
     }
 
     return (

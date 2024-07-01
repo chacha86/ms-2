@@ -10,20 +10,26 @@ interface NoteDto {
 export const NoteList = React.memo(({ bookId, target, onClickItem }:{ bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) => {
 // export function NoteList({bookId, target, onClickItem}: { bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
     const [noteList, setNoteList] = useState<NoteDto[] | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         async function getNoteList() {
             console.log("bookId: ", bookId);
             const data = await get("/notes", {bookId: String(bookId)});
             if(data.data === "fail") {
+                setIsLoading(true);
                 return;
             }
+            setIsLoading(false);
             setNoteList(data.data);
         }
 
         getNoteList();
     }, [bookId]);
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
     let itemClass = 'hover:cursor-pointer p-2';
     let selectedItemClass = itemClass + " bg-blue-600 text-white";
 

@@ -3,6 +3,8 @@
     "daisyui": "^4.11.1"
   },
   "dependencies": {
-    "@stomp/stompjs": "^7.0.0"
+    "@stomp/stompjs": "^7.0.0",
+    "zustand": "^4.5.4",
+    "zustand-persist": "^0.4.0"
   }
 }
