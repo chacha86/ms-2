@@ -1,6 +1,7 @@
 package com.example.ms1.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,48 +43,26 @@ public class JwtFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
         String accessToken = null;
-        String username = null;
 
         if (EXCLUDE_URLS.contains(httpReq.getRequestURI())) {
             chain.doFilter(request, response);
             return;
         }
 
-        try {
-            accessToken = getToken(httpReq, "accessToken");
-            authenticate(accessToken);
+        accessToken = getTokenByCookie(httpReq, "accessToken");
 
-        } catch (ExpiredJwtException e) {
+        if (jwtUtil.isExpired(accessToken)) {
             System.out.println("AccessToken이 만료되었습니다. 재갱신 합니다.");
-            accessToken = getRefreshAccessToken(httpReq);
-            authenticate(accessToken);
-
-            Cookie cookie = new Cookie("accessToken", accessToken);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(60 * 60 * 24);
-            cookie.setPath("/");
-            httpResp.addCookie(cookie);
-
-        } catch (Exception e) {
-            System.out.println("인증 실패");
-//            httpResp.sendRedirect("/api/v1/auth/fail");
+            String refreshToken = getTokenByCookie(httpReq, "refreshToken");
+            accessToken = jwtUtil.getRefreshAccessToken(refreshToken);
+            setTokenCookie(httpResp, accessToken);
         }
 
+        authenticate(accessToken);
         chain.doFilter(request, response);
     }
 
-    private void authenticate(String accessToken) {
-        String username = jwtUtil.getUsername(accessToken, JwtUtil.TokenType.ACCESS);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private String getRefreshAccessToken(HttpServletRequest httpReq) {
-        String refreshToken = getToken(httpReq, "refreshToken");
-        return jwtUtil.createToken(jwtUtil.getUsername(refreshToken, JwtUtil.TokenType.REFRESH), JwtUtil.TokenType.ACCESS);
-    }
-
-    private String getToken(HttpServletRequest httpReq, String tokenName) {
+    private String getTokenByCookie(HttpServletRequest httpReq, String tokenName) {
 
         Cookie[] cookies = httpReq.getCookies();
 
@@ -98,6 +77,20 @@ public class JwtFilter implements Filter {
             }
         }
         return null;
+    }
+
+    private void setTokenCookie(HttpServletResponse httpResp, String accessToken) {
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(60 * 60 * 24);
+        cookie.setPath("/");
+        httpResp.addCookie(cookie);
+    }
+
+    private void authenticate(String accessToken) {
+        String username = jwtUtil.getUsername(accessToken, JwtUtil.TokenType.ACCESS);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 }

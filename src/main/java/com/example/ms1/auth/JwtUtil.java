@@ -14,6 +14,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+
+
     enum TokenType {
         ACCESS, REFRESH
     }
@@ -24,17 +26,37 @@ public class JwtUtil {
     @Value("${jwt.refresh.secret-key}")
     private String refreshKey;
 
-    public String createToken(String username, TokenType type) {
-        Date expireDate = getExpireTime(type);
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("sub", username)
-                .claim("exp", expireDate)
-                .signWith(getMyKey(type))
-                .compact();
+    public String getAccessToken(String username) {
+        return createToken(username, TokenType.ACCESS);
     }
 
-    private Date getExpireTime(TokenType type) {
+    public String getRefreshToken(String username) {
+        return createToken(username, TokenType.REFRESH);
+    }
+
+    public String getRefreshAccessToken(String refreshToken) {
+        return createToken(getUsername(refreshToken, TokenType.REFRESH), TokenType.ACCESS);
+    }
+
+    public String getUsername(String token, TokenType type) {
+        return getClaims(token, type).getPayload().get("sub", String.class);
+    }
+
+    public boolean isExpired(String accessToken) {
+        try {
+            Date expireTime = getExpireTime(accessToken, TokenType.ACCESS);
+        }catch (ExpiredJwtException e){
+            return true;
+        }
+        return false;
+    }
+
+    private Date getExpireTime(String token, TokenType tokenType) {
+        Jws<Claims> jws = getClaims(token, tokenType);
+        return jws.getPayload().get("exp", Date.class);
+    }
+
+    private Date getExpirePeriod(TokenType type) {
         int expireTime = 0;
 
         if (type == TokenType.ACCESS)
@@ -43,31 +65,6 @@ public class JwtUtil {
             expireTime = 1000 * 60 * 60 * 24 * 9999;
 
         return new Date(System.currentTimeMillis() + expireTime);
-    }
-
-
-    public boolean isExpire(String token, TokenType type) {
-        Jws<Claims> jws = getClaims(token, type);
-        Date expiration = jws.getPayload().get("exp", Date.class);
-
-        if (expiration.before(new Date())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public String getUsername(String token, TokenType type) {
-        return getClaims(token, type).getPayload().get("sub", String.class);
-    }
-
-    public Jws<Claims> getClaims(String token, TokenType type) {
-        Jws<Claims> jws = null;
-        jws = Jwts.parser()
-                .verifyWith(getMyKey(type))
-                .build()
-                .parseSignedClaims(token);
-        return jws;
     }
 
     private SecretKey getMyKey(TokenType type) {
@@ -79,5 +76,24 @@ public class JwtUtil {
             targetKey = refreshKey;
         }
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(targetKey));
+    }
+
+    private Jws<Claims> getClaims(String token, TokenType type) throws SignatureException, ExpiredJwtException {
+        Jws<Claims> jws = null;
+        jws = Jwts.parser()
+                .verifyWith(getMyKey(type))
+                .build()
+                .parseSignedClaims(token);
+        return jws;
+    }
+
+    private String createToken(String username, TokenType type) {
+        Date expireDate = getExpirePeriod(type);
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("sub", username)
+                .claim("exp", expireDate)
+                .signWith(getMyKey(type))
+                .compact();
     }
 }
