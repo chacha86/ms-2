@@ -21,19 +21,18 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody Map<String, Object> requestParam, HttpServletResponse res) {
         System.out.println("hohhohoh");
-        throw new RuntimeException("인위적 에러 발생");
+//        throw new RuntimeException("로그인 실패");
+        if (Boolean.valueOf((String) requestParam.get("flag")) == true) {
+            String token = jwtUtil.createToken("chacha");
+            Cookie cookie = new Cookie("accessToken", token);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60 * 60 * 24);
+            cookie.setPath("/");
+            res.addCookie(cookie);
 
-//        if (Boolean.valueOf((String) requestParam.get("flag")) == true) {
-//            String token = jwtUtil.createToken("chacha");
-//            Cookie cookie = new Cookie("accessToken", token);
-//            cookie.setHttpOnly(true);
-//            cookie.setMaxAge(60 * 60 * 24);
-//            cookie.setPath("/");
-//            res.addCookie(cookie);
-//
-//            return "{\"result\" : \"success\", \"token\" : \"" + token + "\"}";
-//        } else
-//            return "{\"result\" : \"fail\"}";
+            return "{\"result\" : \"success\", \"token\" : \"" + token + "\"}";
+        } else
+            return "{\"result\" : \"fail\"}";
     }
 
     @PostMapping("/logout")
@@ -68,7 +67,7 @@ public class AuthController {
     @GetMapping("/user")
     public ResultData user(Authentication authentication) {
         System.out.println(authentication);
-        if(authentication == null) {
+        if (authentication == null) {
             System.out.println("null");
             return new ResultData("F-401", "로그인 실패", "fail");
         }

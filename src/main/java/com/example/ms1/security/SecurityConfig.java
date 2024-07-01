@@ -30,7 +30,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/resources/**")
                                 ).permitAll()
 //                                .requestMatchers("/static/**").permitAll()
-                                .requestMatchers("/api/v1/auth/login","/api/v1/auth/fail", "/ws/**").permitAll()
+                                .requestMatchers("/api/v1/auth/login","/api/v1/auth/fail", "/ws/**", "/test", "/test2").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
