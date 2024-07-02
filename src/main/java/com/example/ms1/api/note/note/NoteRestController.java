@@ -2,22 +2,27 @@ package com.example.ms1.api.note.note;
 
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/notes")
 @CrossOrigin(origins = "http://localhost:3000")
+@Tag(name = "Note API", description = "Note management APIs")
 public class NoteRestController {
     private final NoteService noteService;
 
-    @GetMapping
+    @GetMapping()
+    @Operation(summary = "Get notes in book", description = "Returns note list", security = @SecurityRequirement(name = "bearerAuth"))
     public List<NoteDto> notes(Long bookId) {
         List<NoteDto> noteDtoList = noteService.convertToDtoList(noteService.getNoteListByNotebook(bookId));
         return noteDtoList;

@@ -25,6 +25,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers(
@@ -32,7 +33,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/resources/**")
                                 ).permitAll()
 //                                .requestMatchers("/static/**").permitAll()
-                                .requestMatchers("/api/v1/auth/login","/api/v1/auth/fail", "/ws/**", "/test", "/test2").permitAll()
+                                .requestMatchers("/api/v1/auth/login","/api/v1/auth/fail", "/ws/**", "/test", "/test2", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling

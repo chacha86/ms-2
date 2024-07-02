@@ -1,6 +1,7 @@
 package com.example.ms1.note.notebook;
 
 import com.example.ms1.note.note.Note;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class Notebook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
     @ManyToOne

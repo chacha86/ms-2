@@ -32,7 +32,9 @@ public class JwtFilter implements Filter {
 //            "/api/v1/notes",
             "/api/v1/auth/login",
             "/test",
-            "/test2"
+            "/test2",
+            "/swagger-ui/index.html",
+            "/swagger-ui.html"
     );
 
 
@@ -43,32 +45,51 @@ public class JwtFilter implements Filter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         HttpServletResponse httpResp = (HttpServletResponse) response;
         String accessToken = null;
-
+        String url = httpReq.getRequestURI();
         if (EXCLUDE_URLS.contains(httpReq.getRequestURI())) {
             chain.doFilter(request, response);
             return;
         }
 
-        accessToken = getTokenByCookie(httpReq, "accessToken");
+//        String authorization = ((HttpServletRequest) request).getHeader("Authorization");
+//        if (authorization != null && authorization.startsWith("Bearer ")) {
+//            accessToken = authorization.substring(7);
+//        }
+//        else {
+            accessToken = getTokenOrNull(httpReq, "accessToken");
+//        }
+
+        if (accessToken == null) {
+            System.out.println("AccessToken이 없습니다.");
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (jwtUtil.isExpired(accessToken)) {
             System.out.println("AccessToken이 만료되었습니다. 재갱신 합니다.");
-            String refreshToken = getTokenByCookie(httpReq, "refreshToken");
+            String refreshToken = getTokenOrNull(httpReq, "refreshToken");
+
+            if(refreshToken == null){
+                System.out.println("RefreshToken이 없습니다.");
+                chain.doFilter(request, response);
+                return;
+            }
+
             accessToken = jwtUtil.getRefreshAccessToken(refreshToken);
-            setTokenCookie(httpResp, accessToken);
+            setToken(httpResp, accessToken);
         }
 
         authenticate(accessToken);
         chain.doFilter(request, response);
     }
 
-    private String getTokenByCookie(HttpServletRequest httpReq, String tokenName) {
+    private String getTokenOrNull(HttpServletRequest httpReq, String tokenName) {
 
         Cookie[] cookies = httpReq.getCookies();
 
         if (cookies == null) {
             System.out.println("쿠키가 없습니다.");
-            throw new RuntimeException("쿠키가 없습니다.");
+            return null;
         }
 
         for (Cookie cookie : cookies) {
@@ -79,7 +100,7 @@ public class JwtFilter implements Filter {
         return null;
     }
 
-    private void setTokenCookie(HttpServletResponse httpResp, String accessToken) {
+    private void setToken(HttpServletResponse httpResp, String accessToken) {
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(60 * 60 * 24);

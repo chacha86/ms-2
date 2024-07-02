@@ -1,5 +1,7 @@
 package com.example.ms1.auth;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Controller
 @RestController
@@ -19,7 +22,8 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+//    @Parameter(description = "로그인 여부 선택", name = "flag", required = true, example = "true")
     public String login(@RequestBody Map<String, Object> requestParam, HttpServletResponse res) {
         System.out.println("hohhohoh");
         if (Boolean.valueOf((String) requestParam.get("flag")) == true) {

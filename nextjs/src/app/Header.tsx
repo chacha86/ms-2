@@ -16,8 +16,11 @@ function Header() {
         if (result.result === "success") {
             console.log("logout success");
             setLoginUser(null);
-            router.push("/");
+            router.push("/login");
+            return;
         }
+
+        // 잘못된 요청처리 할 것임.
     }
 
     return (
