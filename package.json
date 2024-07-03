@@ -1,9 +1,12 @@
 {
   "devDependencies": {
-    "daisyui": "^4.11.1"
+    "daisyui": "^4.11.1",
+    "openapi-typescript": "^7.0.1",
+    "typescript": "^5.5.3"
   },
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
+    "openapi-fetch": "^0.10.2",
     "zustand": "^4.5.4",
     "zustand-persist": "^0.4.0"
   }
