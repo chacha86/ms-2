@@ -15,16 +15,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/notes")
+@RequestMapping(value="api/v1/notes")
 @CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "Note API", description = "Note management APIs")
 public class NoteRestController {
     private final NoteService noteService;
 
-    @GetMapping()
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(summary = "Get notes in book", description = "Returns note list", security = @SecurityRequirement(name = "bearerAuth"))
-    public List<NoteDto> notes(Long bookId) {
-        List<NoteDto> noteDtoList = noteService.convertToDtoList(noteService.getNoteListByNotebook(bookId));
+    public List<NoteDto> notes(Long id) {
+        List<NoteDto> noteDtoList = noteService.convertToDtoList(noteService.getNoteListByNotebook(id));
         return noteDtoList;
     }
 }

@@ -1,3 +1,6 @@
+import { paths } from "@/lib/api/v1/schema";
+import createClient from "openapi-fetch";
+
 const baseUrl = 'http://localhost:8999/api/v1';
 async function get(url: string, params: Record<string, string>){
     const queryString = new URLSearchParams(params).toString();

@@ -8,31 +8,34 @@ export default function Detail() {
 
     const checkEditorLoading = () => {
         console.log("checkEditorLoading");
+        // setIsLoading(false);
         setIsEditorLoading(false);
     }
 
     useEffect(() => {
         setIsLoading(false);
-        return
+        // setIsEditorLoading(true);
     }, [isEditorLoading]);
 
     if (isLoading) {
+        console.log("sdfsdf");
         return <Loading/>
     }
 
     return (
-        <>
-            <form method="post" id="updateForm">
-                <div>
-                    <input type="hidden" name="id"/>
-                </div>
-                <div>
-                    <input type="text" name="title"/>
-                </div>
-                <input type="hidden" name="content" id="editor-body"/>
-                <MyEditor checkEditorLoading={checkEditorLoading}/>
-            </form>
-        </>
+        <form method="post" id="updateForm">
+            {!isEditorLoading &&
+                <>
+                    <div>
+                        <input type="hidden" name="id"/>
+                    </div>
+                    <div>
+                        <input type="text" name="title" value="test"/>
+                    </div>
+                    <input type="hidden" name="content" id="editor-body"/>
+                </>}
+            <MyEditor checkEditorLoading={checkEditorLoading}/>
+        </form>
     )
 }
 

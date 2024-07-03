@@ -14,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Schema(description = "Notebook entity")
+@Schema(description = "Notebook transfer object")
 public class NotebookDto {
 
     @Schema(description = "Notebook ID", example = "1")
