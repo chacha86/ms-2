@@ -1,12 +1,10 @@
 "use client";
 import React, {useCallback, useEffect, useState} from "react";
-import MyEditor from "./myEditor";
 import {NoteList} from "@/app/Note";
 import {NoteBookList} from "@/app/Notebook";
 import Header from "@/app/Header";
 import Detail from "@/app/Detail";
 import Link from "next/link";
-import errorStore from "@/app/errorStore";
 import {loginUserStore} from "@/app/login/loginUserStore";
 import { redirect } from 'next/navigation'
 
@@ -30,14 +28,15 @@ export default function Home() {
 
     useEffect(() => {
         console.log("dfsdf : " + loginUser);
-        if(loginUser === null) {
-            redirect('/login');
-        }
         setIsLoading(false);
-    }, [loginUser]);
+    }, []);
 
     if(isLoading) {
         return <div>loading...</div>
+    }
+
+    if(loginUser === null) {
+        redirect('/login');
     }
 
     return (

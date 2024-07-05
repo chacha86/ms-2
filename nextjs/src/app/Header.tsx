@@ -16,7 +16,7 @@ function Header() {
         if (result.result === "success") {
             console.log("logout success");
             setLoginUser(null);
-            router.push("/login");
+            //router.push("/login");
             return;
         }
 

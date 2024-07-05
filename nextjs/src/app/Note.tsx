@@ -1,27 +1,39 @@
-import React, {useEffect, useState} from "react";
-import {get} from "@/global/fetchApi";
+import React, { Component, useEffect, useState } from "react";
+import { get } from "@/global/fetchApi";
+import createClient from "openapi-fetch";
+import { paths, components } from "@/lib/api/v1/schema";
 
-interface NoteDto {
-    id: number;
-    title: string;
-    content: string;
-}
+type NoteDto = components["schemas"]["NoteDto"];
+// interface NoteDto {
+//     id: number;
+//     title: string;
+//     content: string;
+// }
 
-export const NoteList = React.memo(({ bookId, target, onClickItem }:{ bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) => {
-// export function NoteList({bookId, target, onClickItem}: { bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
-    const [noteList, setNoteList] = useState<NoteDto[] | null>(null);
+export const NoteList = React.memo(({ bookId, target, onClickItem }: { bookId: number, target: number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void }) => {
+
+    // export function NoteList({bookId, target, onClickItem}: { bookId: number, target:number, onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void}) {
+    const [noteList, setNoteList] = useState< NoteDto[] | null>(null);
+    // const [noteList, setNoteList] = useState<any[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        console.log('note start');
         async function getNoteList() {
+            const client = createClient<paths>({ baseUrl: "http://localhost:8999" });
+            const { data, error, response } = await client.GET("/api/v1/notes", { params: { query: { id: bookId } },credentials:"include"});
             console.log("bookId: ", bookId);
-            const data = await get("/notes", {bookId: String(bookId)});
-            if(data.data === "fail") {
-                setIsLoading(true);
-                return;
+            console.log(response);
+            // const data = await get("/notes", {bookId: String(bookId)});
+            if(error) {
+                throw new Error(error);
             }
+            // if (data.data === "fail") {
+            //     setIsLoading(true);
+            //     return;
+            // }
             setIsLoading(false);
-            setNoteList(data.data);
+            setNoteList(data);
         }
 
         getNoteList();

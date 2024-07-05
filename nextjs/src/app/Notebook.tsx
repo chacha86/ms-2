@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {get} from "@/global/fetchApi";
+import React, { useEffect, useState } from "react";
+import { get } from "@/global/fetchApi";
 const baseUrl = 'http://localhost:8999';
-import {paths} from "@/lib/api/v1/schema";
+import { paths } from "@/lib/api/v1/schema";
 import createClient from "openapi-fetch";
-import {PathsWithMethod} from "openapi-typescript-helpers";
 
 interface NotebookDto {
     id: number;
@@ -19,7 +18,7 @@ interface NoteBookListProps {
 const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target, onClickItem }) => {
 
     const client = createClient<paths>({ baseUrl });
-// export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
+    // export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
     const [notebookList, setNotebookList] = useState<NotebookDto[] | null>(null);
     const [isLoding, setIsLoading] = useState<boolean>(true);
 
@@ -36,7 +35,7 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
             //client.GET("/api/v1/auth/success");
             console.log(result);
 
-            if(result.data === "fail") {
+            if (result.data === "fail") {
                 throw new Error("fail to get notebook list");
                 return;
             }
@@ -50,7 +49,7 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
         getNotebookList();
     }, []);
 
-    if(isLoding) {
+    if (isLoding) {
         return <div>Loading...</div>;
     }
 
@@ -65,7 +64,7 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
     );
 });
 
-function BookItem({notebook, target, onClickItem}: {
+function BookItem({ notebook, target, onClickItem }: {
     notebook: NotebookDto,
     target: number,
     onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void
@@ -75,12 +74,12 @@ function BookItem({notebook, target, onClickItem}: {
     return (
         <li>
             <a className={itemClass} data-id={notebook.id}
-               onClick={onClickItem}>{notebook.title}</a>
+                onClick={onClickItem}>{notebook.title}</a>
         </li>
     );
 }
 
-function GroupItem({notebook, target, onClickItem}: {
+function GroupItem({ notebook, target, onClickItem }: {
     notebook: NotebookDto,
     target: number,
     onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void,
@@ -113,8 +112,8 @@ function GroupItem({notebook, target, onClickItem}: {
             <span className={itemClass} data-id={notebook.id} onClick={onClickItem}>
                 {notebook.title} <span className={filterClass} onClick={handleToggle}></span>
             </span>
-            <NoteBookList target={target} children={notebook.children} onClickItem={onClickItem}/>
+            <NoteBookList target={target} children={notebook.children} onClickItem={onClickItem} />
         </li>
     );
 }
-export {NoteBookList};
+export { NoteBookList };
