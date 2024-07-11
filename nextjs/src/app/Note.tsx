@@ -42,14 +42,14 @@ export const NoteList = React.memo(({ bookId, target, onClickItem }: { bookId: n
     if (isLoading) {
         return <div>Loading...</div>;
     }
-    let itemClass = 'hover:cursor-pointer p-2';
+    let itemClass = 'hover:cursor-pointer';
     let selectedItemClass = itemClass + " bg-blue-600 text-white";
 
     return (
         <ul className="h-[100%] overflow-scroll">
             {noteList && noteList.map((note: NoteDto) => (
                 <li key={note.id} className={note.id === target ? selectedItemClass : itemClass}>
-                    <span className="block w-[100%]" onClick={onClickItem} data-id={note.id}>{note.title}</span>
+                    <span className="block w-[100%] p-2" onClick={onClickItem} data-id={note.id}>{note.title}</span>
                 </li>
             ))}
         </ul>

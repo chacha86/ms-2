@@ -88,6 +88,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get note
+         * @description Returns note
+         */
+        get: operations["note"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/books": {
         parameters: {
             query?: never;
@@ -177,7 +197,7 @@ export interface components {
              * @description 노트 내용
              * @example 열심히 하면 됩니다.
              */
-            content?: string;
+            content: string;
             /**
              * Format: date-time
              * @description 노트 작성 날짜
@@ -320,6 +340,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NoteDto"][];
+                };
+            };
+        };
+    };
+    note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteDto"];
                 };
             };
         };

@@ -14,22 +14,22 @@ export default function Home() {
     const loginUser= loginUserStore((state) => state.loginUser);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const onClickBookItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
+    const onClickBookItem = (e: React.MouseEvent<HTMLSpanElement>) => {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
-    }, []);
+    }
 
 
-    const onClickNoteItem = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
+    const onClickNoteItem = (e: React.MouseEvent<HTMLSpanElement>) => {
         console.log("note id: ", e.currentTarget.dataset.id);
         setTargetNoteId(Number(e.currentTarget.dataset.id));
-    }, []);
+    }
 
     console.log("loginUser: ", loginUser);
 
     useEffect(() => {
         console.log("dfsdf : " + loginUser);
         setIsLoading(false);
-    }, []);
+    }, [targetNoteId, targetNotebookId]);
 
     if(isLoading) {
         return <div>loading...</div>
@@ -84,7 +84,7 @@ export default function Home() {
                     <a className="btn sortTitle">이름순</a>
                 </div>
                 <div className="w-[60%]">
-                    <Detail/>
+                    <Detail targetNoteId={targetNoteId}/>
                 </div>
             </div>
         </>
