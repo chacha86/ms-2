@@ -1,7 +1,9 @@
 package com.example.ms1.api.note.note;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class NoteDto {
     private String title;
 
     @Schema(description = "노트 내용", example = "열심히 하면 됩니다.")
+    @NotNull
     private String content;
 
     @Schema(description = "노트 작성 날짜", example = "2024년 09월 11일")

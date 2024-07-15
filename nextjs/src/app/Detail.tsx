@@ -36,16 +36,12 @@ export default function Detail({targetNoteId}:{targetNoteId: number}) {
             }
             setNote(data);
             console.log("note: ", data);
+            console.log("note.content: ", data.content);
             setIsLoading(false);
         }
         test();
         // setIsEditorLoading(true);
     }, [targetNoteId]);
-
-    if (isLoading) {
-        console.log("sdfsdf");
-        return <Loading />
-    }
 
     return (
         <form method="post" id="updateForm">

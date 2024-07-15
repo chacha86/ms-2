@@ -27,4 +27,10 @@ public class NoteRestController {
         List<NoteDto> noteDtoList = noteService.convertToDtoList(noteService.getNoteListByNotebook(id));
         return noteDtoList;
     }
+
+    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get note", description = "Returns note", security = @SecurityRequirement(name = "bearerAuth"))
+    public NoteDto note(@PathVariable Long id) {
+        return noteService.getNoteDto(id);
+    }
 }

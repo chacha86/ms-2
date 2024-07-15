@@ -23,16 +23,18 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
+    public NoteDto getNoteDto(Long id) {
+        Note note = noteRepository.findById(id).orElseThrow();
+        return note.toDto();
+    }
+
     public Note getNote(Long id) {
-        return noteRepository.findById(id).orElseThrow();
+        Note note = noteRepository.findById(id).orElseThrow();
+        return note;
     }
 
     public List<Note> getNoteListByNotebook(Long targetNotebookId) {
         return noteRepository.findByNotebookId(targetNotebookId);
-    }
-
-    public void save(Note note) {
-        noteRepository.save(note);
     }
 
     public void delete(Long id) {
@@ -59,5 +61,16 @@ public class NoteService {
             noteDto.setContent(note.getContent());
             return noteDto;
         }).toList();
+    }
+
+    public NoteDto update(NoteDto noteDto) {
+        Note note = noteRepository.findById(noteDto.getId()).orElseThrow();
+        if(noteDto.getTitle().trim().length() == 0) {
+            note.setTitle("제목 없음");
+        }
+
+        note.setTitle(noteDto.getTitle());
+        note.setContent(noteDto.getContent());
+        return noteRepository.save(note).toDto();
     }
 }

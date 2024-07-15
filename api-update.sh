@@ -1,0 +1,1 @@
+npx openapi-typescript http://localhost:8999/v3/api-docs -o ./nextjs/src/lib/api/v1/schema.ts

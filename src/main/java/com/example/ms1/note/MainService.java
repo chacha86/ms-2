@@ -1,5 +1,6 @@
 package com.example.ms1.note;
 
+import com.example.ms1.api.note.note.NoteDto;
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.NoteService;
 import com.example.ms1.note.note.tag.tag.Tag;
@@ -32,7 +33,7 @@ public class MainService {
 
         Notebook targetNotebook = notebookList.get(0);
         List<Note> noteList = targetNotebook.getNoteList();
-        Note targetNote = noteList.get(0);
+        NoteDto targetNote = noteList.get(0).toDto();
 
         List<Notebook> searchedNotebookList = notebookService.getSearchedNotebookList(keyword);
         List<Note> searchedNoteList = noteService.getSearchedNoteList(keyword);
@@ -46,7 +47,7 @@ public class MainService {
 
         MainDataDto mainDataDto = this.getDefaultMainData(keyword);
         Notebook targetNotebook = this.getNotebook(notebookId);
-        Note targetNote = noteService.getNote(noteId);
+        NoteDto targetNote = noteService.getNoteDto(noteId);
 
         mainDataDto.setTargetNotebook(targetNotebook);
         mainDataDto.setTargetNote(targetNote);

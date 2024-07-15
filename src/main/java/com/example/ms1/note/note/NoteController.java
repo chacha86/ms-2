@@ -1,5 +1,6 @@
 package com.example.ms1.note.note;
 
+import com.example.ms1.api.note.note.NoteDto;
 import com.example.ms1.note.MainDataDto;
 import com.example.ms1.note.MainService;
 import com.example.ms1.note.ParamHandler;
@@ -41,18 +42,9 @@ public class NoteController {
         return "main";
     }
     @PostMapping("/{id}/update")
-    public String update(@PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id, String title, String content, ParamHandler paramHandler){
-        Note note = noteService.getNote(id);
-
-        if(title.trim().length() == 0) {
-            title = "제목 없음";
-        }
-
-        note.setTitle(title);
-        note.setContent(content);
-
-        noteService.save(note);
-        return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, id));
+    public String update(@PathVariable("notebookId") Long notebookId, NoteDto noteDto, ParamHandler paramHandler){
+        noteService.update(noteDto);
+        return paramHandler.getRedirectUrl("/books/%d/notes/%d".formatted(notebookId, noteDto.getId()));
     }
 
     @PostMapping("/{id}/delete")
