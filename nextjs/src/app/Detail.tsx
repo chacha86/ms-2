@@ -6,7 +6,7 @@ import createClient from "openapi-fetch";
 
 type NoteDto = components["schemas"]["NoteDto"];
 
-export default function Detail({targetNoteId}:{targetNoteId: number}) {
+export default function Detail({ targetNoteId }: { targetNoteId: number }) {
     console.log("Detail");
     console.log("targetNoteId: ", targetNoteId);
     // const [isEditorLoading, setIsEditorLoading] = useState<boolean>(true);
@@ -57,38 +57,31 @@ export default function Detail({targetNoteId}:{targetNoteId: number}) {
                 {/* <MyEditor checkEditorLoading={checkEditorLoading} /> */}
                 <MyEditor content={note?.content} />
             </div>
-            <EditorAfter />
+            <div>
+                <div>
+                    <input type="button" value="수정" className="postActionBtn" />
+                </div>
+                <div>
+                    <input type="button" value="삭제" className="postActionBtn" />
+                </div>
+
+                <ul className="flex gap-5">
+                    <li>
+                        <form>
+                            <input type="submit" className="btn" />
+                        </form>
+                    </li>
+                </ul>
+                <form>
+                    {/*<input*/}
+                    {/*    type="text"*/}
+                    {/*    name="name"*/}
+                    {/*    className="input input-bordered"*/}
+                    {/*    placeholder="태그 추가"*/}
+                    {/*/>*/}
+                    <input type="submit" className="postActionBtn btn" value="추가" />
+                </form>
+            </div>
         </form >
     )
-}
-
-const EditorAfter = () => {
-
-    return (
-        <div>
-            <div>
-                <input type="button" value="수정" className="postActionBtn" />
-            </div>
-            <div>
-                <input type="button" value="삭제" className="postActionBtn" />
-            </div>
-
-            <ul className="flex gap-5">
-                <li>
-                    <form>
-                        <input type="submit" className="btn" />
-                    </form>
-                </li>
-            </ul>
-            <form>
-                {/*<input*/}
-                {/*    type="text"*/}
-                {/*    name="name"*/}
-                {/*    className="input input-bordered"*/}
-                {/*    placeholder="태그 추가"*/}
-                {/*/>*/}
-                <input type="submit" className="postActionBtn btn" value="추가" />
-            </form>
-        </div>
-    );
 }

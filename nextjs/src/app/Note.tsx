@@ -42,8 +42,8 @@ export const NoteList = React.memo(({ bookId, target, onClickItem }: { bookId: n
     if (isLoading) {
         return <div>Loading...</div>;
     }
-    let itemClass = 'hover:cursor-pointer';
-    let selectedItemClass = itemClass + " bg-blue-600 text-white";
+    let itemClass = 'hover:cursor-pointer hover:bg-gray-300';
+    let selectedItemClass = itemClass + " bg-gray-500 text-white rounded-md";
 
     return (
         <ul className="h-[100%] overflow-scroll">

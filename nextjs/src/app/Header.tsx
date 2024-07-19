@@ -24,9 +24,9 @@ function Header() {
     }
 
     return (
-        <div className="bg-blue-300 flex">
+        <div className="bg-gray-700 p-[10px] mb-[10px] flex">
             <div className="w-[30%]">
-                <a href="/">logo</a>
+                <Link href="/" className="text-white text-[2rem]">cnote</Link>
             </div>
             <div className="w-[70%] flex justify-end gap-5 mr-[10px]">
                 {loginUser !== null

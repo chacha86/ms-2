@@ -43,7 +43,7 @@ export default function Home() {
         <>
             <Header/>
             <div className="flex">
-                <div className="bg-indigo-300 w-[20%]">
+                <div className="border-r-[1px] border-gray-300 w-[12%]">
                     <div className="h-[70%]">
                         <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
                     </div>
@@ -74,7 +74,7 @@ export default function Home() {
                     <button className="btn">노트 이름 변경</button>
                     <button className="btn">태그 목록</button>
                 </div>
-                <div className="bg-red-300 w-[20%] h-[800px] text-center ">
+                <div className="border-r-[1px] border-gray-300 w-[15%] h-[800px] text-center ">
                     <NoteList bookId={targetNotebookId} onClickItem={onClickNoteItem} target={targetNoteId}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn"/>

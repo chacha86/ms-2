@@ -69,11 +69,12 @@ function BookItem({ notebook, target, onClickItem }: {
     target: number,
     onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }) {
-
-    const itemClass = notebook.id == target ? ' bg-blue-600 text-white' : '';
+    const baseClass= 'hover:bg-gray-300';
+    const itemClass = notebook.id == target ?' bg-gray-500 text-white' : ' text-black';
+    const resultClass = baseClass + itemClass;
     return (
         <li>
-            <a className={itemClass} data-id={notebook.id}
+            <a className={resultClass} data-id={notebook.id}
                 onClick={onClickItem}>{notebook.title}</a>
         </li>
     );
@@ -101,9 +102,9 @@ function GroupItem({ notebook, target, onClickItem }: {
         setIsOpen(isOpen);
     }, [isOpen]);
 
-    let itemClass = "menu-dropdown-toggle relative";
+    let itemClass = "menu-dropdown-toggle relative hover:bg-gray-300";
     itemClass += isOpen ? ' menu-dropdown-show' : '';
-    itemClass += notebook.id == target ? ' bg-blue-600 text-white' : '';
+    itemClass += notebook.id == target ? ' bg-gray-500 text-white' : '';
     let filterClass = "filter border-2 absolute w-[15px] h-[50%] p-[12px] right-[0.3rem] cursor-copy";
     filterClass += notebook.id == target ? ' bg-indigo-300' : '';
 
