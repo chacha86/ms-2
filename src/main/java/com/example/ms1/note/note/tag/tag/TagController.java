@@ -1,11 +1,10 @@
 package com.example.ms1.note.note.tag.tag;
 
 import com.example.ms1.note.MainDataDto;
-import com.example.ms1.note.MainService;
+import com.example.ms1.note.NoteServiceOrchestrator;
 import com.example.ms1.note.ParamHandler;
 import com.example.ms1.note.note.Note;
 import com.example.ms1.note.note.tag.NoteTag;
-import com.example.ms1.note.notebook.Notebook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +20,7 @@ import java.util.List;
 @RequestMapping("/tags")
 public class TagController {
     private final TagService tagService;
-    private final MainService mainService;
+    private final NoteServiceOrchestrator noteServiceOrchestrator;
 
     @GetMapping("/{tagId}/notes")
     public String tagNotes(@PathVariable("tagId") Long tagId, Long notebookId, Long noteId, ParamHandler paramHandler, Model model) {
@@ -33,7 +32,7 @@ public class TagController {
             noteListByTag.add(noteTag.getNote());
         }
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, noteId, paramHandler.getKeyword(), paramHandler.getSort());
+        MainDataDto mainDataDto = noteServiceOrchestrator.getMainData(notebookId, noteId, paramHandler.getKeyword(), paramHandler.getSort());
 
         model.addAttribute("mainDataDto", mainDataDto);
         model.addAttribute("noteListByTag", noteListByTag);

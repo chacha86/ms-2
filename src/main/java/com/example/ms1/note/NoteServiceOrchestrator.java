@@ -6,9 +6,7 @@ import com.example.ms1.note.note.NoteService;
 import com.example.ms1.note.note.tag.tag.Tag;
 import com.example.ms1.note.note.tag.tag.TagService;
 import com.example.ms1.note.notebook.Notebook;
-import com.example.ms1.note.notebook.NotebookRepository;
 import com.example.ms1.note.notebook.NotebookService;
-import com.sun.tools.javac.Main;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MainService {
+public class NoteServiceOrchestrator {
 
     private final NotebookService notebookService;
     private final NoteService noteService;
@@ -135,5 +133,9 @@ public class MainService {
         }
         // 노트북 삭제
         notebookService.delete(notebook.getId());
+    }
+
+    public List<NoteDto> getNoteList(Long bookId) {
+        return noteService.convertToDtoList(noteService.getNoteListByNotebook(bookId));
     }
 }

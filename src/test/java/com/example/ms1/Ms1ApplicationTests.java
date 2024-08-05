@@ -28,4 +28,42 @@ class Ms1ApplicationTests {
         }
     }
 
+    enum Weather {
+        SUNNY(0), RAINY(1), CLOUDY(2);
+
+        private int value;
+
+        Weather(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static Weather valueOf(int value) {
+            switch (value) {
+                case 0:
+                    return SUNNY;
+                case 1:
+                    return RAINY;
+                case 2:
+                    return CLOUDY;
+                default:
+                    throw new AssertionError("Unknown value: " + value);
+            }
+        }
+
+
+    }
+
+    @Test
+    void t1() {
+        int data = 0;
+
+        Weather weather = Weather.valueOf(data);
+        System.out.println(weather);
+
+    }
+
 }

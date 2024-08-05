@@ -7,10 +7,12 @@ import Detail from "@/app/Detail";
 import Link from "next/link";
 import {loginUserStore} from "@/app/login/loginUserStore";
 import { redirect } from 'next/navigation'
+import { components } from "@/lib/api/v1/schema";
+type NoteDto = components["schemas"]["NoteDto"];
 
 export default function Home() {
     const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
-    const [targetNoteId, setTargetNoteId] = useState<number>(0);
+    const [targetNote, setTargetNote] = useState<NoteDto | null>(null);
     const loginUser= loginUserStore((state) => state.loginUser);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -18,10 +20,8 @@ export default function Home() {
         setTargetNotebookId(Number(e.currentTarget.dataset.id));
     }
 
-
-    const onClickNoteItem = (e: React.MouseEvent<HTMLSpanElement>) => {
-        console.log("note id: ", e.currentTarget.dataset.id);
-        setTargetNoteId(Number(e.currentTarget.dataset.id));
+    const onClickNoteItem = (note:NoteDto) => {
+        setTargetNote(note);
     }
 
     console.log("loginUser: ", loginUser);
@@ -29,7 +29,7 @@ export default function Home() {
     useEffect(() => {
         console.log("dfsdf : " + loginUser);
         setIsLoading(false);
-    }, [targetNoteId, targetNotebookId]);
+    }, [targetNote, targetNotebookId]);
 
     if(isLoading) {
         return <div>loading...</div>
@@ -75,7 +75,7 @@ export default function Home() {
                     <button className="btn">태그 목록</button>
                 </div>
                 <div className="border-r-[1px] border-gray-300 w-[15%] h-[800px] text-center ">
-                    <NoteList bookId={targetNotebookId} onClickItem={onClickNoteItem} target={targetNoteId}/>
+                    <NoteList bookId={targetNotebookId} onClickItem={onClickNoteItem} target={targetNote}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn"/>
                     </form>
@@ -84,7 +84,7 @@ export default function Home() {
                     <a className="btn sortTitle">이름순</a>
                 </div>
                 <div className="w-[60%]">
-                    <Detail targetNoteId={targetNoteId}/>
+                    <Detail targetNote={targetNote}/>
                 </div>
             </div>
         </>

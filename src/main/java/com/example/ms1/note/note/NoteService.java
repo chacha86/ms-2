@@ -73,4 +73,8 @@ public class NoteService {
         note.setContent(noteDto.getContent());
         return noteRepository.save(note).toDto();
     }
+
+    public List<NoteDto> getNoteListByBookId(Long bookId) {
+        return convertToDtoList(getNoteListByNotebook(bookId));
+    }
 }

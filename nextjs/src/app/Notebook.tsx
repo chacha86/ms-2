@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { get } from "@/global/fetchApi";
-const baseUrl = 'http://localhost:8999';
 import { paths } from "@/lib/api/v1/schema";
 import createClient from "openapi-fetch";
 
@@ -17,12 +16,11 @@ interface NoteBookListProps {
 }
 const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target, onClickItem }) => {
 
-    const client = createClient<paths>({ baseUrl });
-    // export function NoteBookList({children, target, onClickItem}: NoteBookListProps) {
     const [notebookList, setNotebookList] = useState<NotebookDto[] | null>(null);
     const [isLoding, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+
 
         if (children) {
             setNotebookList(children);
@@ -31,18 +29,19 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
         }
 
         async function getNotebookList() {
-            const result = await get("/books", {});
+            // const result = await get("/books", {});
             //client.GET("/api/v1/auth/success");
+            // console.log(result);
+            const result = await get('/books', {});
+            console.log('notebooks : ');
             console.log(result);
-
-            if (result.data === "fail") {
+            if (result.resultCode === "fail") {
                 throw new Error("fail to get notebook list");
-                return;
             }
-            setNotebookList(result);
+            setNotebookList(result.body);
             setIsLoading(false);
             if (target === 0) {
-                target = result[0].id;
+                target = result.body[0].id;
             }
         }
 
@@ -69,8 +68,8 @@ function BookItem({ notebook, target, onClickItem }: {
     target: number,
     onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }) {
-    const baseClass= 'hover:bg-gray-300';
-    const itemClass = notebook.id == target ?' bg-gray-500 text-white' : ' text-black';
+    const baseClass = 'hover:bg-gray-300';
+    const itemClass = notebook.id == target ? ' bg-gray-500 text-white' : ' text-black';
     const resultClass = baseClass + itemClass;
     return (
         <li>

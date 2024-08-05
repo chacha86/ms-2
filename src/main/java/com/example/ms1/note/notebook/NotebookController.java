@@ -1,27 +1,24 @@
 package com.example.ms1.note.notebook;
 
-import com.example.ms1.note.MainService;
+import com.example.ms1.note.NoteServiceOrchestrator;
 import com.example.ms1.note.ParamHandler;
 import com.example.ms1.note.note.Note;
-import com.example.ms1.note.note.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.net.URLEncoder;
-
 @Controller
 @RequiredArgsConstructor
 public class NotebookController {
 
     private final NotebookService notebookService;
-    private final MainService mainService;
+    private final NoteServiceOrchestrator noteServiceOrchestrator;
 
     @PostMapping("/books/write")
     public String write(ParamHandler paramHandler) {
-        mainService.saveDefaultNotebook();
+        noteServiceOrchestrator.saveDefaultNotebook();
         return paramHandler.getRedirectUrl("/");
 
     }
@@ -29,7 +26,7 @@ public class NotebookController {
     @PostMapping("/groups/{notebookId}/books/write")
     public String groupWrite(@PathVariable("notebookId") Long notebookId, ParamHandler paramHandler) {
 
-        mainService.saveGroupNotebook(notebookId);
+        noteServiceOrchestrator.saveGroupNotebook(notebookId);
         return paramHandler.getRedirectUrl("/");
     }
 

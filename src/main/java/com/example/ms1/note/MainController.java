@@ -1,11 +1,5 @@
 package com.example.ms1.note;
 
-import com.example.ms1.note.note.Note;
-import com.example.ms1.note.note.NoteRepository;
-import com.example.ms1.note.note.NoteService;
-import com.example.ms1.note.notebook.Notebook;
-import com.example.ms1.note.notebook.NotebookRepository;
-import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
@@ -15,17 +9,16 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class MainController {
-    private final MainService mainService;
+    private final NoteServiceOrchestrator noteServiceOrchestrator;
 
     @RequestMapping("/")
     public String main(Model model, ParamHandler paramHandler) {
 
-        MainDataDto mainDataDto = mainService.getDefaultMainData(paramHandler.getKeyword());
+        MainDataDto mainDataDto = noteServiceOrchestrator.getDefaultMainData(paramHandler.getKeyword());
         model.addAttribute("mainDataDto", mainDataDto);
         return "main";
     }

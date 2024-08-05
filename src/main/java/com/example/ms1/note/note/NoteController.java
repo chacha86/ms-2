@@ -2,11 +2,8 @@ package com.example.ms1.note.note;
 
 import com.example.ms1.api.note.note.NoteDto;
 import com.example.ms1.note.MainDataDto;
-import com.example.ms1.note.MainService;
+import com.example.ms1.note.NoteServiceOrchestrator;
 import com.example.ms1.note.ParamHandler;
-import com.example.ms1.note.notebook.Notebook;
-import com.example.ms1.note.notebook.NotebookRepository;
-import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,20 +12,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books/{notebookId}/notes")
 public class NoteController {
 
     private final NoteService noteService;
-    private final MainService mainService;
+    private final NoteServiceOrchestrator noteServiceOrchestrator;
 
     @PostMapping("/write")
     public String write(@PathVariable("notebookId") Long notebookId, ParamHandler paramHandler) {
 
-        mainService.addToNotebook(notebookId);
+        noteServiceOrchestrator.addToNotebook(notebookId);
         return paramHandler.getRedirectUrl("/");
     }
 
@@ -36,7 +31,7 @@ public class NoteController {
     public String detail(Model model, @PathVariable("notebookId") Long notebookId, @PathVariable("id") Long id,
                          ParamHandler paramHandler) {
 
-        MainDataDto mainDataDto = mainService.getMainData(notebookId, id, paramHandler.getKeyword(), paramHandler.getSort());
+        MainDataDto mainDataDto = noteServiceOrchestrator.getMainData(notebookId, id, paramHandler.getKeyword(), paramHandler.getSort());
         model.addAttribute("mainDataDto", mainDataDto);
 
         return "main";

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button onclick="test();">test</button>
+<script>
+    const test = () => {
+        console.log("hihi");
+        fetch(
+            "https://apihub.kma.go.kr/api/typ02/openApi/VilageFcstInfoService_2.0/getUltraSrtNcst?pageNo=1&numOfRows=1000&dataType=JSON&base_date=20240731&base_time=0600&nx=55&ny=127&authKey=67Zdgo4iSMu2XYKOItjLhQ"
+        )
+            .then((res) => {
+                console.log(res);
+                return res.json();
+            })
+            .then((data) => console.log(data));
+        console.log("ㅠㅛ듀ㅛㄷ");
+    };
+</script>
+</body>
+</html>

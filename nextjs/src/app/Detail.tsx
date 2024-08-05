@@ -6,42 +6,26 @@ import createClient from "openapi-fetch";
 
 type NoteDto = components["schemas"]["NoteDto"];
 
-export default function Detail({ targetNoteId }: { targetNoteId: number }) {
+export default function Detail({ targetNote }: { targetNote: NoteDto  | null }) {
     console.log("Detail");
-    console.log("targetNoteId: ", targetNoteId);
-    // const [isEditorLoading, setIsEditorLoading] = useState<boolean>(true);
+    console.log("targetNote: ", targetNote);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [note, setNote] = useState<NoteDto | null>(null);
 
+    useEffect(() => {
+        console.log("useEffect");
+        if(targetNote) {
+            setNote(targetNote);
+            setIsLoading(false);
+            return;
+        }
+        setIsLoading(false);
+    }, [targetNote]);
     // const checkEditorLoading = () => {
     //     console.log("checkEditorLoading");
     //     // setIsLoading(false);
     //     setIsEditorLoading(false);
     // }
-
-    useEffect(() => {
-        const test = async () => {
-            const client = createClient<paths>({ baseUrl: "http://localhost:8999" });
-            const { data, error } = await client.GET("/api/v1/notes/{id}", {
-                params: {
-                    path: {
-                        id: targetNoteId
-                    },
-                },
-                credentials: "include"
-            });
-            if (error) {
-                console.log("error: ", error);
-                return;
-            }
-            setNote(data);
-            console.log("note: ", data);
-            console.log("note.content: ", data.content);
-            setIsLoading(false);
-        }
-        test();
-        // setIsEditorLoading(true);
-    }, [targetNoteId]);
 
     return (
         <form method="post" id="updateForm">
@@ -67,20 +51,25 @@ export default function Detail({ targetNoteId }: { targetNoteId: number }) {
 
                 <ul className="flex gap-5">
                     <li>
-                        <form>
+                        <input type="submit" className="btn" />
+
+                        {/* <form>
                             <input type="submit" className="btn" />
-                        </form>
+                        </form> */}
                     </li>
                 </ul>
-                <form>
-                    {/*<input*/}
-                    {/*    type="text"*/}
-                    {/*    name="name"*/}
-                    {/*    className="input input-bordered"*/}
-                    {/*    placeholder="태그 추가"*/}
-                    {/*/>*/}
+
+                <input type="submit" className="postActionBtn btn" value="추가" />
+                {/* <form>
+                    <input
+                        type="text"
+                        name="name"
+                        className="input input-bordered"
+                        placeholder="태그 추가"
+                    />
                     <input type="submit" className="postActionBtn btn" value="추가" />
-                </form>
+                </form> */}
+
             </div>
         </form >
     )
