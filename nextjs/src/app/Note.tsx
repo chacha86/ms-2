@@ -3,32 +3,36 @@ import { get } from "@/global/fetchApi";
 import { paths, components } from "@/lib/api/v1/schema";
 
 type NoteDto = components["schemas"]["NoteDto"];
-export const NoteList = React.memo(({ bookId, target, onClickItem }: { bookId: number, target: NoteDto | null, onClickItem: (note:NoteDto) => void }) => {
+type NotebookDto = components["schemas"]["NotebookDto"];
+export const NoteList = React.memo(({ targetBook, targetNote, onClickItem }: { targetBook: NotebookDto | null, targetNote: NoteDto | null, onClickItem: (note: NoteDto) => void }) => {
 
-    const [noteList, setNoteList] = useState< NoteDto[]>([]);
+    const [noteList, setNoteList] = useState<NoteDto[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        if (targetBook === null) {
+            setIsLoading(false);
+            return;
+        }
+
         async function getNoteList() {
 
-            // if(bookId === 0) {
-            //     return;
-            // }
-            console.log("bookId: ", bookId);
-            console.log(target);
-            const result = await get(`/books/${bookId}/notes`, {});
-            if(result.resultCode === "fail") {
+            const result = await get(`/books/${targetBook?.id}/notes`, {});
+            if (result.resultCode === "fail") {
                 setIsLoading(true);
                 throw new Error(result.message);
             }
 
+            if (targetNote === null) {
+                onClickItem(result.body[0]);
+            }
             setIsLoading(false);
             console.log(result.body);
             setNoteList(result.body);
         }
 
         getNoteList();
-    }, [bookId]);
+    }, [targetBook]);
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -38,9 +42,9 @@ export const NoteList = React.memo(({ bookId, target, onClickItem }: { bookId: n
 
     return (
         <ul className="h-[100%] overflow-scroll">
-            {noteList && noteList.map((note: NoteDto, index:number) => (
-                <li key={note.id} className={note.id === target?.id ? selectedItemClass : itemClass}>
-                    <span className="block w-[100%] p-2" onClick={() => {onClickItem(noteList[index])}} data-idx={index}>{note.title}</span>
+            {noteList && noteList.map((note: NoteDto, index: number) => (
+                <li key={note.id} className={note.id === targetNote?.id ? selectedItemClass : itemClass}>
+                    <span className="block w-[100%] p-2" onClick={() => { onClickItem(noteList[index]) }} data-idx={index}>{note.title}</span>
                 </li>
             ))}
         </ul>

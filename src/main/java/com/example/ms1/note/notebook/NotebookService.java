@@ -1,9 +1,6 @@
 package com.example.ms1.note.notebook;
 
-import com.example.ms1.api.note.BookTreeDto;
 import com.example.ms1.api.note.notebook.NotebookDto;
-import com.example.ms1.note.note.Note;
-import com.example.ms1.note.note.NoteService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

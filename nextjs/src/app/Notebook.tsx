@@ -1,47 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { get } from "@/global/fetchApi";
-import { paths } from "@/lib/api/v1/schema";
-import createClient from "openapi-fetch";
+import { paths, components } from "@/lib/api/v1/schema";
 
-interface NotebookDto {
-    id: number;
-    title: string;
-    children: NotebookDto[];
-}
+type NotebookDto = components["schemas"]["NotebookDto"];
 
 interface NoteBookListProps {
-    children?: NotebookDto[] | null;
-    target: number;
-    onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void;
+    children?: NotebookDto[];
+    targetBook: NotebookDto | null;
+    onClickItem: (notebook:NotebookDto) => void;
 }
-const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target, onClickItem }) => {
+const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, targetBook, onClickItem }) => {
 
-    const [notebookList, setNotebookList] = useState<NotebookDto[] | null>(null);
+    const [notebookList, setNotebookList] = useState<NotebookDto[]>([]);
     const [isLoding, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
-
-        if (children) {
+        if (children && children.length !== 0) {
             setNotebookList(children);
             setIsLoading(false);
             return;
         }
 
         async function getNotebookList() {
-            // const result = await get("/books", {});
-            //client.GET("/api/v1/auth/success");
-            // console.log(result);
             const result = await get('/books', {});
-            console.log('notebooks : ');
-            console.log(result);
             if (result.resultCode === "fail") {
                 throw new Error("fail to get notebook list");
             }
             setNotebookList(result.body);
             setIsLoading(false);
-            if (target === 0) {
-                target = result.body[0].id;
+            if (targetBook === null) {
+                onClickItem(result.body[0]);
             }
         }
 
@@ -54,35 +43,36 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
 
     return (
         <ul className="menu menu-dropdown p-0">
-            {notebookList && notebookList.map((notebook: NotebookDto) => (
-                notebook.children.length === 0 ?
-                    <BookItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem} /> :
-                    <GroupItem key={notebook.id} notebook={notebook} target={target} onClickItem={onClickItem} />
+            {notebookList.map((notebook: NotebookDto) => (
+                // notebook.children.length === 0 ?
+                notebook.children && notebook.children.length !== 0 ?
+                    <GroupItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} /> :
+                    <BookItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} /> 
             ))}
         </ul>
     );
 });
 
-function BookItem({ notebook, target, onClickItem }: {
+function BookItem({ notebook, targetBook, onClickItem}: {
     notebook: NotebookDto,
-    target: number,
-    onClickItem: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    targetBook: NotebookDto | null,
+    onClickItem: (notebook:NotebookDto) => void,
 }) {
     const baseClass = 'hover:bg-gray-300';
-    const itemClass = notebook.id == target ? ' bg-gray-500 text-white' : ' text-black';
+    const itemClass = notebook.id == targetBook?.id ? ' bg-gray-500 text-white' : ' text-black';
     const resultClass = baseClass + itemClass;
     return (
         <li>
             <a className={resultClass} data-id={notebook.id}
-                onClick={onClickItem}>{notebook.title}</a>
+                onClick={() => {onClickItem(notebook)}}>{notebook.title}</a>
         </li>
     );
 }
 
-function GroupItem({ notebook, target, onClickItem }: {
+function GroupItem({ notebook, targetBook, onClickItem }: {
     notebook: NotebookDto,
-    target: number,
-    onClickItem: (e: React.MouseEvent<HTMLSpanElement>) => void,
+    targetBook: NotebookDto | null,
+    onClickItem: (notebook:NotebookDto) => void,
 }) {
 
     const [isOpen, setIsOpen] = useState(false);
@@ -103,16 +93,16 @@ function GroupItem({ notebook, target, onClickItem }: {
 
     let itemClass = "menu-dropdown-toggle relative hover:bg-gray-300";
     itemClass += isOpen ? ' menu-dropdown-show' : '';
-    itemClass += notebook.id == target ? ' bg-gray-500 text-white' : '';
+    itemClass += notebook.id == targetBook?.id ? ' bg-gray-500 text-white' : '';
     let filterClass = "filter border-2 absolute w-[15px] h-[50%] p-[12px] right-[0.3rem] cursor-copy";
-    filterClass += notebook.id == target ? ' bg-indigo-300' : '';
+    filterClass += notebook.id == targetBook?.id ? ' bg-indigo-300' : '';
 
     return (
         <li>
-            <span className={itemClass} data-id={notebook.id} onClick={onClickItem}>
+            <span className={itemClass} data-id={notebook.id} onClick={() => {onClickItem(notebook)}}>
                 {notebook.title} <span className={filterClass} onClick={handleToggle}></span>
             </span>
-            <NoteBookList target={target} children={notebook.children} onClickItem={onClickItem} />
+            <NoteBookList targetBook={targetBook} children={notebook.children} onClickItem={onClickItem} />
         </li>
     );
 }

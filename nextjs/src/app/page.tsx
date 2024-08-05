@@ -8,16 +8,19 @@ import Link from "next/link";
 import {loginUserStore} from "@/app/login/loginUserStore";
 import { redirect } from 'next/navigation'
 import { components } from "@/lib/api/v1/schema";
+
+type NotebookDto = components["schemas"]["NotebookDto"];
 type NoteDto = components["schemas"]["NoteDto"];
 
 export default function Home() {
-    const [targetNotebookId, setTargetNotebookId] = useState<number>(0);
+    const [targetNotebook, setTargetNotebook] = useState<NotebookDto | null>(null);
     const [targetNote, setTargetNote] = useState<NoteDto | null>(null);
     const loginUser= loginUserStore((state) => state.loginUser);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const onClickBookItem = (e: React.MouseEvent<HTMLSpanElement>) => {
-        setTargetNotebookId(Number(e.currentTarget.dataset.id));
+    const onClickBookItem = (notebook:NotebookDto) => {
+        setTargetNotebook(notebook);
+        setTargetNote(null);
     }
 
     const onClickNoteItem = (note:NoteDto) => {
@@ -29,7 +32,7 @@ export default function Home() {
     useEffect(() => {
         console.log("dfsdf : " + loginUser);
         setIsLoading(false);
-    }, [targetNote, targetNotebookId]);
+    }, [targetNote, targetNotebook]);
 
     if(isLoading) {
         return <div>loading...</div>
@@ -45,7 +48,7 @@ export default function Home() {
             <div className="flex">
                 <div className="border-r-[1px] border-gray-300 w-[12%]">
                     <div className="h-[70%]">
-                        <NoteBookList target={targetNotebookId} children={null} onClickItem={onClickBookItem}/>
+                        <NoteBookList targetBook={targetNotebook} children={[]} onClickItem={onClickBookItem}/>
                     </div>
                     <Link href="/zustest">zustand</Link>
                     <form>
@@ -75,7 +78,7 @@ export default function Home() {
                     <button className="btn">태그 목록</button>
                 </div>
                 <div className="border-r-[1px] border-gray-300 w-[15%] h-[800px] text-center ">
-                    <NoteList bookId={targetNotebookId} onClickItem={onClickNoteItem} target={targetNote}/>
+                    <NoteList targetBook={targetNotebook} onClickItem={onClickNoteItem} targetNote={targetNote}/>
                     <form>
                         <input type="submit" value="추가" className="postActionBtn"/>
                     </form>
