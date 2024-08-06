@@ -1,11 +1,11 @@
 "use client";
-import React, {useCallback, useEffect, useState} from "react";
-import {NoteList} from "@/app/Note";
-import {NoteBookList} from "@/app/Notebook";
+import React, { useCallback, useEffect, useState } from "react";
+import { NoteList } from "@/app/Note";
+import { NoteBookList } from "@/app/Notebook";
 import Header from "@/app/Header";
 import Detail from "@/app/Detail";
 import Link from "next/link";
-import {loginUserStore} from "@/app/login/loginUserStore";
+import { loginUserStore } from "@/app/login/loginUserStore";
 import { redirect } from 'next/navigation'
 import { components } from "@/lib/api/v1/schema";
 
@@ -15,16 +15,39 @@ type NoteDto = components["schemas"]["NoteDto"];
 export default function Home() {
     const [targetNotebook, setTargetNotebook] = useState<NotebookDto | null>(null);
     const [targetNote, setTargetNote] = useState<NoteDto | null>(null);
-    const loginUser= loginUserStore((state) => state.loginUser);
+    const [targetNoteMap, setTargetNoteMap] = useState<Map<number, NoteDto | null>>(new Map());
+    const loginUser = loginUserStore((state) => state.loginUser);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const onClickBookItem = (notebook:NotebookDto) => {
-        setTargetNotebook(notebook);
-        setTargetNote(null);
+    const initTargetNote = (notebookList: NotebookDto[]) => {
+        // console.log("initTargetNote");
+        notebookList.forEach((notebook: NotebookDto) => {
+            const initValue = null;
+            if (notebook.id) {
+                const tmp = new Map(targetNoteMap);
+                tmp.set(notebook.id, initValue);
+                setTargetNoteMap(tmp);
+            }
+        });
     }
 
-    const onClickNoteItem = (note:NoteDto) => {
+    const onClickBookItem = (notebook: NotebookDto) => {
+        setTargetNotebook(notebook);
+        if (notebook.id) {
+            const note = targetNoteMap.get(notebook.id);
+            if (note) {
+                setTargetNote(note);
+            }
+        }
+    }
+
+    const onClickNoteItem = (notebook:NotebookDto, note: NoteDto) => {
         setTargetNote(note);
+        const tmp = new Map(targetNoteMap);
+        if (targetNotebook?.id) {
+            tmp.set(targetNotebook.id, note);
+            setTargetNoteMap(tmp);
+        }
     }
 
     console.log("loginUser: ", loginUser);
@@ -34,25 +57,25 @@ export default function Home() {
         setIsLoading(false);
     }, [targetNote, targetNotebook]);
 
-    if(isLoading) {
+    if (isLoading) {
         return <div>loading...</div>
     }
 
-    if(loginUser === null) {
+    if (loginUser === null) {
         redirect('/login');
     }
 
     return (
         <>
-            <Header/>
+            <Header />
             <div className="flex">
                 <div className="border-r-[1px] border-gray-300 w-[12%]">
                     <div className="h-[70%]">
-                        <NoteBookList targetBook={targetNotebook} children={[]} onClickItem={onClickBookItem}/>
+                        <NoteBookList targetBook={targetNotebook} children={[]} onClickItem={onClickBookItem} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote}/>
                     </div>
                     <Link href="/zustest">zustand</Link>
                     <form>
-                        <input type="submit" value="추가" className="postActionBtn btn"/>
+                        <input type="submit" value="추가" className="postActionBtn btn" />
                     </form>
 
                     <form method="post">
@@ -63,7 +86,7 @@ export default function Home() {
                         />
                     </form>
                     <form method="post">
-                        <input type="submit" value="삭제" className="postActionBtn btn"/>
+                        <input type="submit" value="삭제" className="postActionBtn btn" />
                     </form>
                     <a href="/signup" className="btn">
                         회원 가입
@@ -78,16 +101,16 @@ export default function Home() {
                     <button className="btn">태그 목록</button>
                 </div>
                 <div className="border-r-[1px] border-gray-300 w-[15%] h-[800px] text-center ">
-                    <NoteList targetBook={targetNotebook} onClickItem={onClickNoteItem} targetNote={targetNote}/>
+                    <NoteList targetBook={targetNotebook} onClickItem={onClickNoteItem} targetNote={targetNote} targetNoteMap={targetNoteMap} />
                     <form>
-                        <input type="submit" value="추가" className="postActionBtn"/>
+                        <input type="submit" value="추가" className="postActionBtn" />
                     </form>
 
                     <a className="btn sortDate">날짜순</a>
                     <a className="btn sortTitle">이름순</a>
                 </div>
                 <div className="w-[60%]">
-                    <Detail targetNote={targetNote}/>
+                    <Detail targetNote={targetNote} />
                 </div>
             </div>
         </>

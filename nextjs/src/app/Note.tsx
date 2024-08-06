@@ -4,7 +4,7 @@ import { paths, components } from "@/lib/api/v1/schema";
 
 type NoteDto = components["schemas"]["NoteDto"];
 type NotebookDto = components["schemas"]["NotebookDto"];
-export const NoteList = React.memo(({ targetBook, targetNote, onClickItem }: { targetBook: NotebookDto | null, targetNote: NoteDto | null, onClickItem: (note: NoteDto) => void }) => {
+export const NoteList = React.memo(({ targetBook, targetNote, onClickItem }: { targetBook: NotebookDto | null, targetNote: NoteDto | null, onClickItem: (notebook: NotebookDto, note: NoteDto) => void, targetNoteMap: Map<number, NoteDto | null> }) => {
 
     const [noteList, setNoteList] = useState<NoteDto[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -17,14 +17,15 @@ export const NoteList = React.memo(({ targetBook, targetNote, onClickItem }: { t
 
         async function getNoteList() {
 
-            const result = await get(`/books/${targetBook?.id}/notes`, {});
+            const targetBookId = targetBook?.id;
+            const result = await get(`/books/${targetBookId}/notes`, {});
+
             if (result.resultCode === "fail") {
                 setIsLoading(true);
                 throw new Error(result.message);
             }
-
-            if (targetNote === null) {
-                onClickItem(result.body[0]);
+            if (targetNote === null && targetBook) {
+                onClickItem(targetBook, result.body[0]);
             }
             setIsLoading(false);
             console.log(result.body);
@@ -44,7 +45,12 @@ export const NoteList = React.memo(({ targetBook, targetNote, onClickItem }: { t
         <ul className="h-[100%] overflow-scroll">
             {noteList && noteList.map((note: NoteDto, index: number) => (
                 <li key={note.id} className={note.id === targetNote?.id ? selectedItemClass : itemClass}>
-                    <span className="block w-[100%] p-2" onClick={() => { onClickItem(noteList[index]) }} data-idx={index}>{note.title}</span>
+                    <span className="block w-[100%] p-2" onClick={
+                        () => {
+                            if (targetBook?.id) {
+                                onClickItem(targetBook, noteList[index]);
+                            }
+                        }} data-idx={index}>{note.title}</span>
                 </li>
             ))}
         </ul>

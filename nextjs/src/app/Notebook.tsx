@@ -3,17 +3,21 @@ import { get } from "@/global/fetchApi";
 import { paths, components } from "@/lib/api/v1/schema";
 
 type NotebookDto = components["schemas"]["NotebookDto"];
+type NoteDto = components["schemas"]["NoteDto"];
 
 interface NoteBookListProps {
     children?: NotebookDto[];
     targetBook: NotebookDto | null;
-    onClickItem: (notebook:NotebookDto) => void;
+    onClickItem: (notebook: NotebookDto) => void;
+    targetNoteMap: Map<number, NoteDto | null>;
+    initTargetNote: (notebookList: NotebookDto[]) => void;
 }
-const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, targetBook, onClickItem }) => {
+const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, targetBook, onClickItem, targetNoteMap, initTargetNote }) => {
 
     const [notebookList, setNotebookList] = useState<NotebookDto[]>([]);
     const [isLoding, setIsLoading] = useState<boolean>(true);
 
+    
     useEffect(() => {
 
         if (children && children.length !== 0) {
@@ -29,6 +33,7 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
             }
             setNotebookList(result.body);
             setIsLoading(false);
+            initTargetNote(result.body);
             if (targetBook === null) {
                 onClickItem(result.body[0]);
             }
@@ -46,17 +51,18 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
             {notebookList.map((notebook: NotebookDto) => (
                 // notebook.children.length === 0 ?
                 notebook.children && notebook.children.length !== 0 ?
-                    <GroupItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} /> :
-                    <BookItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} /> 
+                    <GroupItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote}/> :
+                    <BookItem key={notebook.id} notebook={notebook} targetBook={targetBook} onClickItem={onClickItem} targetNoteMap={targetNoteMap}/>
             ))}
         </ul>
     );
 });
 
-function BookItem({ notebook, targetBook, onClickItem}: {
+function BookItem({ notebook, targetBook, onClickItem, targetNoteMap }: {
     notebook: NotebookDto,
     targetBook: NotebookDto | null,
-    onClickItem: (notebook:NotebookDto) => void,
+    onClickItem: (notebook: NotebookDto) => void,
+    targetNoteMap: Map<number, NoteDto | null>
 }) {
     const baseClass = 'hover:bg-gray-300';
     const itemClass = notebook.id == targetBook?.id ? ' bg-gray-500 text-white' : ' text-black';
@@ -64,15 +70,21 @@ function BookItem({ notebook, targetBook, onClickItem}: {
     return (
         <li>
             <a className={resultClass} data-id={notebook.id}
-                onClick={() => {onClickItem(notebook)}}>{notebook.title}</a>
+                onClick={() => {
+                    if (notebook.id) {
+                        onClickItem(notebook)
+                    }
+                }}>{notebook.title}</a>
         </li>
     );
 }
 
-function GroupItem({ notebook, targetBook, onClickItem }: {
+function GroupItem({ notebook, targetBook, onClickItem, targetNoteMap, initTargetNote }: {
     notebook: NotebookDto,
     targetBook: NotebookDto | null,
-    onClickItem: (notebook:NotebookDto) => void,
+    onClickItem: (notebook: NotebookDto) => void,
+    targetNoteMap: Map<number, NoteDto | null>,
+    initTargetNote: (notebookList: NotebookDto[]) => void
 }) {
 
     const [isOpen, setIsOpen] = useState(false);
@@ -99,10 +111,10 @@ function GroupItem({ notebook, targetBook, onClickItem }: {
 
     return (
         <li>
-            <span className={itemClass} data-id={notebook.id} onClick={() => {onClickItem(notebook)}}>
+            <span className={itemClass} data-id={notebook.id} onClick={() => { onClickItem(notebook) }}>
                 {notebook.title} <span className={filterClass} onClick={handleToggle}></span>
             </span>
-            <NoteBookList targetBook={targetBook} children={notebook.children} onClickItem={onClickItem} />
+            <NoteBookList targetBook={targetBook} children={notebook.children} onClickItem={onClickItem} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote} />
         </li>
     );
 }
