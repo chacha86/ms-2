@@ -19,29 +19,26 @@ export default function Home() {
     const loginUser = loginUserStore((state) => state.loginUser);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const initTargetNote = (notebookList: NotebookDto[]) => {
-        // console.log("initTargetNote");
-        notebookList.forEach((notebook: NotebookDto) => {
-            const initValue = null;
-            if (notebook.id) {
-                const tmp = new Map(targetNoteMap);
-                tmp.set(notebook.id, initValue);
-                setTargetNoteMap(tmp);
-            }
+    const initTargetNote = (notebookIdList: number[]) => {
+        const tmp = new Map(targetNoteMap);
+        notebookIdList.forEach((id: number) => {
+            tmp.set(id, null);
         });
+
+        setTargetNoteMap(tmp);
     }
 
     const onClickBookItem = (notebook: NotebookDto) => {
         setTargetNotebook(notebook);
         if (notebook.id) {
             const note = targetNoteMap.get(notebook.id);
-            if (note) {
+            if (note !== undefined) {
                 setTargetNote(note);
             }
         }
     }
 
-    const onClickNoteItem = (notebook:NotebookDto, note: NoteDto) => {
+    const onClickNoteItem = (notebook: NotebookDto, note: NoteDto) => {
         setTargetNote(note);
         const tmp = new Map(targetNoteMap);
         if (targetNotebook?.id) {
@@ -71,7 +68,7 @@ export default function Home() {
             <div className="flex">
                 <div className="border-r-[1px] border-gray-300 w-[12%]">
                     <div className="h-[70%]">
-                        <NoteBookList targetBook={targetNotebook} children={[]} onClickItem={onClickBookItem} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote}/>
+                        <NoteBookList targetBook={targetNotebook} children={[]} onClickItem={onClickBookItem} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote} />
                     </div>
                     <Link href="/zustest">zustand</Link>
                     <form>

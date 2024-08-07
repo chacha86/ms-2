@@ -10,7 +10,7 @@ interface NoteBookListProps {
     targetBook: NotebookDto | null;
     onClickItem: (notebook: NotebookDto) => void;
     targetNoteMap: Map<number, NoteDto | null>;
-    initTargetNote: (notebookList: NotebookDto[]) => void;
+    initTargetNote: (notebookIdList: number[]) => void;
 }
 const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, targetBook, onClickItem, targetNoteMap, initTargetNote }) => {
 
@@ -31,11 +31,11 @@ const NoteBookList: React.FC<NoteBookListProps> = React.memo(({ children, target
             if (result.resultCode === "fail") {
                 throw new Error("fail to get notebook list");
             }
-            setNotebookList(result.body);
+            setNotebookList(result.body.tree);
             setIsLoading(false);
-            initTargetNote(result.body);
+            initTargetNote(result.body.idList);
             if (targetBook === null) {
-                onClickItem(result.body[0]);
+                onClickItem(result.body.tree[0]);
             }
         }
 
@@ -84,7 +84,7 @@ function GroupItem({ notebook, targetBook, onClickItem, targetNoteMap, initTarge
     targetBook: NotebookDto | null,
     onClickItem: (notebook: NotebookDto) => void,
     targetNoteMap: Map<number, NoteDto | null>,
-    initTargetNote: (notebookList: NotebookDto[]) => void
+    initTargetNote: (notebookIdList: number[]) => void
 }) {
 
     const [isOpen, setIsOpen] = useState(false);

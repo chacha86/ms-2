@@ -10,6 +10,7 @@ import com.example.ms1.note.notebook.NotebookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,9 +69,16 @@ public class NoteServiceOrchestrator {
         return notebookService.getNotebook(notebookId);
     }
 
-    public List<Notebook> getNotebookList() {
-        return notebookService.getNotebookList();
+    public List<Long> getAllNotebookIdList() {
+        List<Notebook> notebookList = notebookService.getNotebookList();
+        List<Long> idList = new ArrayList<>();
+        for(Notebook notebook : notebookList) {
+            idList.add(notebook.getId());
+        }
+
+        return idList;
     }
+
 
     public Notebook saveDefaultNotebook() {
         Notebook notebook = new Notebook();

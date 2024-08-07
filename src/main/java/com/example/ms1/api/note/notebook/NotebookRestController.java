@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.print.Book;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -25,11 +26,14 @@ public class NotebookRestController {
     private final NotebookService notebookService;
     private final NoteServiceOrchestrator noteServiceOrchestrator;
 
+    public record NotebookResponseBody(List<NotebookDto> tree, List<Long> idList) {}
+
     @Operation(summary = "Get book tree", description = "Returns book tree structure")
     @GetMapping(value = "", produces = APPLICATION_JSON_VALUE )
-    public RsData<List<NotebookDto>> books() {
+    public RsData<NotebookResponseBody> bookTree() {
+        List<Long> notebookIdList = noteServiceOrchestrator.getAllNotebookIdList();
         List<NotebookDto> tree = notebookService.buildTree();
-        return new RsData<>(tree);
+        return new RsData<>(new NotebookResponseBody(tree, notebookIdList));
     }
 
     @GetMapping("/{id}/notes")
