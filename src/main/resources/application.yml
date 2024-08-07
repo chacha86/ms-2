@@ -1,0 +1,37 @@
+server:
+  port: '8999'
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: ms1
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    password: ''
+    username: root
+    url: jdbc:mysql://localhost:3306/mission?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-secret: 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
+            client-id: 1014357240100-fj2gl097ehssooe44t7cef5k1lbavbu1.apps.googleusercontent.com
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+jwt:
+  access:
+    secret-key: 219e55d41b11e4d9a33b04c3e941c5bc64640e86b13244435b8fe1ae275ed7ad6a03edd397a0c1452e50294eb0958295abaf35681e689b69e9bdb0294d94bc51
+  refresh:
+    secret-key: 2bf1d58974fd752e7f7554bca658a393431911e96c2584dc8d13d6d5d7bb7345b4ba756075d37b290e56080d9905e89fc8e9d4d81625ec499236105d68f77417
+  my-key: 2bf1d58974fd752e7f7554bca658a393431911e96c2584dc8d13d6d5d7bb7345b4ba756075d37b290e56080d9905e89fc8e9d4d81625ec499236105d68f77417
