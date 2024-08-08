@@ -82,7 +82,7 @@ function BookItem({ notebook, targetBook, onClickItem, targetNoteMap, onClickMen
                         onClickItem(notebook)
                     }
                 }}>{notebook.title}</span>
-            <span className="absolute right-[0.5rem] top-[0.2rem] text-[1rem] font-bold hover:bg-gray-100 hover:text-black rounded-none hover:rounded-none p-[5px]" onClick={onClickMenu}>+</span>
+            <span className="absolute right-[0.5rem] top-[0.2rem] text-[0.5rem] font-bold hover:bg-gray-100 hover:text-black rounded-none hover:rounded-none p-[5px]" onClick={onClickMenu}>●●●</span>
         </li>
     );
 }
@@ -123,7 +123,7 @@ function GroupItem({ notebook, targetBook, onClickItem, targetNoteMap, initTarge
     return (
         <li>
             <span className={itemClass} data-id={notebook.id} onClick={() => { onClickItem(notebook) }}>
-                {notebook.title} <span className="absolute right-[2.5rem] text-[1rem] font-bold hover:bg-gray-100 hover:text-black p-[5px]" onClick={onClickMenu}>+</span><span className={filterClass} onClick={handleToggle}></span>
+                {notebook.title} <span className="absolute right-[2.5rem] text-[0.5rem] font-bold hover:bg-gray-100 hover:text-black p-[5px]" onClick={onClickMenu}>●●●</span><span className={filterClass} onClick={handleToggle}></span>
             </span>
             <NoteBookList targetBook={targetBook} children={notebook.children} onClickItem={onClickItem}
                 onClickMenu={onClickMenu} targetNoteMap={targetNoteMap} initTargetNote={initTargetNote} />
