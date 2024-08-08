@@ -1,4 +1,4 @@
-import MyEditor from "@/app/myEditor";
+import MyEditor from "@/app/components/note/myEditor";
 import React, { useEffect, useState } from "react";
 import Loading from "@/global/Loading";
 import { paths, components } from "@/lib/api/v1/schema";
@@ -6,7 +6,7 @@ import createClient from "openapi-fetch";
 
 type NoteDto = components["schemas"]["NoteDto"];
 
-export default function Detail({ targetNote }: { targetNote: NoteDto  | null }) {
+export default function Detail({ targetNote }: { targetNote: NoteDto | null }) {
     console.log("Detail");
     console.log("targetNote: ", targetNote);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -14,52 +14,61 @@ export default function Detail({ targetNote }: { targetNote: NoteDto  | null }) 
 
     useEffect(() => {
         console.log("useEffect");
-        if(targetNote) {
+        if (targetNote) {
+        console.log("useEffect2");
             setNote(targetNote);
             setIsLoading(false);
             return;
         }
-        setIsLoading(false);
     }, [targetNote]);
+
+    useEffect(() => {
+        console.log(targetNote);
+        setNote(targetNote);
+        setIsLoading(false);
+    }, []);
     // const checkEditorLoading = () => {
     //     console.log("checkEditorLoading");
     //     // setIsLoading(false);
     //     setIsEditorLoading(false);
     // }
 
+    if(isLoading) {
+        return <Loading />;
+    }
     return (
-        <form method="post" id="updateForm">
+        <div>
             <div>
                 <input type="hidden" name="id" />
             </div>
             <div>
-                <input type="text" name="title" value={note?.title} />
+                <input className="input mb-[10px] input-bordered" type="text" name="title" value={note?.title} />
                 {/* 제목 */}
             </div>
             <input type="hidden" name="content" id="editor-body" />
-            <div className="h-[600px]">
+            <div className="">
                 {/* <MyEditor checkEditorLoading={checkEditorLoading} /> */}
                 <MyEditor content={note?.content} />
             </div>
             <div>
-                <div>
+                {/* <div>
                     <input type="button" value="수정" className="postActionBtn" />
                 </div>
                 <div>
                     <input type="button" value="삭제" className="postActionBtn" />
-                </div>
+                </div> */}
 
-                <ul className="flex gap-5">
+                {/* <ul className="flex gap-5">
                     <li>
-                        <input type="submit" className="btn" />
+                        <input type="submit" className="btn" /> */}
 
                         {/* <form>
                             <input type="submit" className="btn" />
                         </form> */}
-                    </li>
+                    {/* </li>
                 </ul>
 
-                <input type="submit" className="postActionBtn btn" value="추가" />
+                <input type="submit" className="postActionBtn btn" value="추가" /> */}
                 {/* <form>
                     <input
                         type="text"
@@ -71,6 +80,6 @@ export default function Detail({ targetNote }: { targetNote: NoteDto  | null }) 
                 </form> */}
 
             </div>
-        </form >
+        </div>
     )
 }

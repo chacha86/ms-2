@@ -30,6 +30,7 @@ public class AuthController {
             String token = jwtUtil.getAccessToken("chacha");
             Cookie cookie = new Cookie("accessToken", token);
             cookie.setHttpOnly(true);
+            // cookie.setSecure(true); // https에서만 쿠키 전송. 배포시 true로 변경
             cookie.setMaxAge(60 * 60 * 24);
             cookie.setPath("/");
             res.addCookie(cookie);

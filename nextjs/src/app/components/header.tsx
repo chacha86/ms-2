@@ -1,15 +1,14 @@
 'use client';
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {cookies} from "next/headers";
 import {get, post} from "@/global/fetchApi";
 import {redirect, useRouter} from "next/navigation";
 import Link from "next/link";
-import errorStore from "@/app/errorStore";
 import {loginUserStore} from "@/app/login/loginUserStore";
 
-function Header() {
+function Header({sendHeightToMain}: {sendHeightToMain: (height: number) => void}) {
     const [loginUser, setLoginUser] = loginUserStore((state) => [state.loginUser, state.setUser]);
-    const router = useRouter();
+    const headerEl = useRef<HTMLDivElement | null>(null);
 
     const onClickLogout = async () => {
         const result = await post("/auth/logout", {});
@@ -19,12 +18,16 @@ function Header() {
             //router.push("/login");
             return;
         }
-
-        // 잘못된 요청처리 할 것임.
     }
 
+    useEffect(() => {
+        if(headerEl.current?.clientHeight) {
+            sendHeightToMain(headerEl.current.clientHeight);
+        }
+    }, []);
+
     return (
-        <div className="bg-gray-700 p-[10px] mb-[10px] flex">
+        <div ref={headerEl} className="bg-gray-700 p-[10px] flex">
             <div className="w-[30%]">
                 <Link href="/" className="text-white text-[2rem]">cnote</Link>
             </div>
